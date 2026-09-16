@@ -12,8 +12,10 @@ Page_2.html
 Page_3.html
 
 # Refactor foundation setup
-1. Link CTA buttons for landing page to login page 2
-2. Link Continue to workspace CTA button to page 3
+1. Complete: Link CTA buttons for landing page to login page 2
+2. Complete: Link Continue to workspace CTA button to page 3
+3. Complete: Load in original styles.css
+4. Load in css_additions.css
 
 # Landing page
 ## Tasks
@@ -115,14 +117,26 @@ Fix: Establish tests asserting critical buttons shown on common format screens. 
 
 1. Header & Top Navigation
 * **Reduce Visual Noise:** Group secondary actions (*FAQ*, *Messages*, *Contact Developer*) into a single drop-down menu or place them in a subtle top bar to free up prominent header space.
-* **Consolidate App Meta:** Move the update timestamp (*Last App Update...*) into a footer or a small status tooltip near the account section rather than placing it directly beneath the main branding logo.
 
-2. Establish well defined viewports
+Profile Dropdown: The profile section (Avatar and Name) now acts as a trigger for a dropdown menu.
+Chevron Indicator: Add a small chevron (▾) next to your name to visually signal that it is an interactive menu.
+Button Relocation: The "Account" link has been removed from the main header area and placed inside the new profile dropdown for a cleaner layout. Sign out should be in this accordion.
+
+* **Consolidate App Meta:** Move the update timestamp (*Last App Update...*) into a footer or a small status tooltip near the account section rather than placing it directly beneath the main branding logo.
+* 
+Support Dropdown: A new interactive element labeled "ⓘ Support ▾" has been added to the header.
+Action Consolidation: The FAQ, Messages, and Contact Developer buttons have been moved from the main header into this new dropdown menu.
+
+Flex Alignment: The parent container for these elements has been updated to use display: flex with a row orientation.
+Vertical Centering: Both elements are now vertically aligned (align-items: center) to ensure a balanced look.
+Spacing: A consistent gap of 12px has been applied between the two items to prevent them from feeling cramped while maintaining a unified grouping.
+
+1. Establish well defined viewports
 - Create 4 view ports with a left to right navigation bar establishing a workflow the user should typically use to bid. 
   - Lines
   - Trips
+  - Reserve
   - Training
-  - 
 
 1. **Summary Metrics Bar**
 * **Improve Visual Hierarchy:** Standardize card heights and alignment for metrics (*Flying lines*, *Reserve lines*, *Trips*, *Line credit range*, etc.). Use lighter borders or subtle card backgrounds to make the key figures stand out more clearly without cluttering the screen.
@@ -138,3 +152,43 @@ Fix: Establish tests asserting critical buttons shown on common format screens. 
 * **Data Display & Line Cards**
 * **Scannability in Table/Linear View:** The *FLYING LINES* list contains dense blocks of metadata (*Credit gross*, *Carry-In value*, *Airports*, *Remarks*). Using structured columns, badge chips for status tags (e.g., `SPLIT LINE`, `UNLIKELY TO HOLD`), and clear color accents for carry-in vs. regular credit will significantly reduce cognitive load when scanning long lists.
 * **Sticky Headers:** Ensure the table headers and quick-filter bar remain fixed at the top when scrolling through long line lists.
+
+### Home button has no function
+
+## UI/UX Optimization: CrewBidPro Workspace
+
+**Context**
+Analysis of the CrewBidPro application interface to reduce visual noise, improve information hierarchy, and optimize the layout for high-density data management.
+
+**Diagnostics**
+The following architectural and stylistic issues were identified across the main workspace components:
+
+| Component | Findings |
+| :--- | :--- |
+| **Header** | `topbar-actions` contains 7+ disparate buttons (FAQ, Messages, Contact Developer, Admin, etc.), causing clutter. |
+| **App Meta** | `.app-update-strip` is nested inside the brand lockup, competing with the primary logo. |
+| **Metrics Bar** | `#summaryGrid` uses a basic block display; lacks visual distinction between clickable and static metrics. |
+| **Layout** | Main content sections (`#workspaceControlsDeck`, `#linesPanel`) use `display: block`, causing vertical stacking rather than a 2-column grid. |
+| **Navigation** | The "JUMP" FAB (`.tab-jump`) uses `position: static`, preventing it from floating or anchoring to a specific pane. |
+| **Table** | `thead` uses `position: static`, causing headers to disappear during scrolling. |
+
+**Actionable Findings**
+*   **Action Consolidation:** Group secondary actions (FAQ, Messages, Contact Developer) into a single `<details>` dropdown or a "More" menu to reclaim header space.
+*   **Visual Hierarchy:** Apply `display: grid` to `#summaryGrid` to standardize metric card heights. Use `cursor: pointer` and subtle hover states to indicate actionable metrics like "Flying lines" versus static data.
+*   **Layout Efficiency:** Transition the main container to a grid layout to support the requested 2-column view for filters and content.
+*   **Accordions:** Standardize `.filter-cluster` headers with chevron indicators (`::after` elements) to clarify expansion states.
+
+**Code Guidance**
+
+
+The following structural change is suggested to move the update timestamp from the header to a less prominent location:
+
+
+`````js
+// Relocate App Update Strip to a potential footer or meta section
+const updateStrip = document.querySelector('.app-update-strip');
+const targetContainer = document.querySelector('.topbar-meta'); // Or a footer if available
+if (updateStrip && targetContainer) {
+    targetContainer.appendChild(updateStrip);
+}
+`````

@@ -1,0 +1,1469 @@
+
+<!doctype html>
+<html lang="en" class="theme-dark" style="background:#07111d;color-scheme:dark;">
+  <head>
+    <meta charset="utf-8">
+    <meta name="color-scheme" content="dark light">
+    <meta name="theme-color" content="#07111d">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CrewBidPro</title>
+    <link rel="icon" href="branding/source-export/app-icon-light.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="branding/web/apple-touch-icon.png">
+    <link rel="manifest" href="manifest.webmanifest">
+    <style>
+      html {
+        background: #07111d;
+      }
+
+      html.theme-dark {
+        background: #07111d;
+      }
+
+      html.theme-dark body {
+        background: #07111d;
+      }
+    </style>
+    <script>
+      (() => {
+        const params = new URLSearchParams(window.location.search);
+        if (!params.has("resetShellCache") || params.has("shellCacheResetDone")) return;
+        const tasks = [];
+        if ("serviceWorker" in navigator) {
+          tasks.push(navigator.serviceWorker.getRegistrations()
+            .then((registrations) => Promise.all(registrations.map((registration) => registration.unregister()))));
+        }
+        if ("caches" in window) {
+          tasks.push(caches.keys().then((keys) => Promise.all(keys.map((key) => caches.delete(key)))));
+        }
+        Promise.allSettled(tasks).finally(() => {
+          params.delete("resetShellCache");
+          params.set("shellCacheResetDone", "1");
+          window.location.replace(`${window.location.pathname}?${params.toString()}`);
+        });
+      })();
+    </script>
+    <script>
+      (() => {
+        const preferencesKey = "kalittaBidParser.preferences";
+        const preferencesCookie = "kalittaBidParser_preferences";
+        const accordionKey = "crewbidpro.workspaceAccordionState";
+        const lightBackground = "#f2f5f8";
+        const darkBackground = "#07111d";
+        let isDarkTheme = false;
+        const previewTheme = ["127.0.0.1", "localhost", "::1"].includes(window.location.hostname)
+          ? new URLSearchParams(window.location.search).get("previewTheme")
+          : "";
+        const readCookie = (name) => {
+          const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+          return match ? decodeURIComponent(match[1]) : "";
+        };
+        const coverReload = () => {
+          if (!isDarkTheme || document.getElementById("darkReloadCover")) return;
+          const cover = document.createElement("div");
+          cover.id = "darkReloadCover";
+          cover.setAttribute("aria-hidden", "true");
+          cover.style.cssText = "position:fixed;inset:0;z-index:2147483647;background:#07111d;pointer-events:none;";
+          document.documentElement.style.backgroundColor = darkBackground;
+          document.body?.classList.add("theme-dark");
+          document.body?.append(cover);
+        };
+
+        try {
+          const saved = window.localStorage.getItem(preferencesKey) || readCookie(preferencesCookie) || "{}";
+          const theme = ["dark", "light"].includes(previewTheme) ? previewTheme : JSON.parse(saved).theme;
+          if (theme === "dark") {
+            isDarkTheme = true;
+            document.documentElement.classList.add("theme-dark");
+            document.documentElement.style.colorScheme = "dark";
+            document.documentElement.style.backgroundColor = darkBackground;
+          } else {
+            document.documentElement.classList.remove("theme-dark");
+            document.documentElement.style.colorScheme = "light";
+            document.documentElement.style.backgroundColor = lightBackground;
+          }
+        } catch {
+          document.documentElement.classList.remove("theme-dark");
+          document.documentElement.style.colorScheme = "light";
+          document.documentElement.style.backgroundColor = lightBackground;
+        }
+
+        try {
+          const accordionState = JSON.parse(window.localStorage.getItem(accordionKey) || "{}");
+          document.documentElement.dataset.workspaceCalendarExpanded = String(accordionState.calendar !== false);
+          document.documentElement.dataset.workspaceFiltersExpanded = String(accordionState.filters !== false);
+          document.documentElement.dataset.workspaceCityAvoidExpanded = String(accordionState.cityAvoid !== false);
+        } catch {
+          document.documentElement.dataset.workspaceCalendarExpanded = "true";
+          document.documentElement.dataset.workspaceFiltersExpanded = "true";
+          document.documentElement.dataset.workspaceCityAvoidExpanded = "true";
+        }
+
+        window.addEventListener("beforeunload", coverReload);
+        window.addEventListener("pagehide", coverReload);
+      })();
+    </script>
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="css_additions.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  </head>
+  <body class="theme-dark workspace-is-hydrating workspace-is-verifying" style="background:#07111d;">
+    <script>
+      (() => {
+        if (document.documentElement.classList.contains("theme-dark")) {
+          document.body.classList.add("theme-dark");
+          document.body.style.backgroundColor = "#07111d";
+        } else {
+          document.body.classList.remove("theme-dark");
+          document.body.style.backgroundColor = "#f2f5f8";
+        }
+      })();
+    </script>
+    <header class="topbar">
+      <div class="brand-lockup" aria-label="CrewBidPro">
+        <div class="brand-copy">
+          <p class="eyebrow">Kalitta workspace</p>
+          <img class="brand-logo-image" src="assets/site-logo-dark.svg" alt="CrewBidPro" width="276" height="77">
+          <div class="app-update-strip" aria-label="Application update information">
+            <span data-last-app-update>Last App Update: Checking...</span>
+          </div>
+        </div>
+      </div>
+      <div class="topbar-meta">
+        <div class="topbar-actions">
+          <button id="faqButton" type="button" class="btn-secondary topbar-action">FAQ</button>
+          <button id="messagesButton" type="button" class="btn-secondary topbar-action message-button" hidden>Messages</button>
+          <button id="contactButton" type="button" class="btn-secondary topbar-action">Contact Developer</button>
+          <button id="devTierToggle" type="button" class="btn-secondary topbar-action dev-tier-toggle" hidden>Free Tier View</button>
+          <a id="workspaceAdminLink" href="admin" class="btn-secondary topbar-action topbar-action-link" hidden>Admin</a>
+          <a id="workspaceAccountLink" href="profile.html" class="btn-secondary topbar-action topbar-action-link">Account</a>
+          <button id="workspaceSignOutButton" type="button" class="btn-secondary topbar-action">Sign Out</button>
+        </div>
+        <button id="profileButton" type="button" class="profile-button" aria-label="Open profile">
+          <span id="profileAvatar" class="profile-avatar">RP</span>
+          <span class="profile-button-copy">
+            <strong id="profileName">Crew Profile</strong>
+            <span id="profileSeniorityBadge" class="profile-seniority-badge">Employee not confirmed</span>
+          </span>
+        </button>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Bid sections and page jumps">
+      <div class="tab-group tab-group-home" aria-label="Home">
+        <button class="tab tab-jump" data-view-target="home">Home</button>
+        <section class="current-dataset-banner is-verifying" aria-live="polite">
+          <p id="currentDatasetBanner">Standby. Verifying your workspace.</p>
+        </section>
+        <button class="tab" data-tab="import">Import</button>
+        <span id="importAttentionHint" class="visually-hidden">Select Import to load a bid package.</span>
+      </div>
+      <span class="tab-divider" aria-hidden="true"></span>
+      <div class="tab-group tab-group-primary" aria-label="Bid views">
+        <button class="tab is-active" data-tab="lines">Lines</button>
+        <button class="tab" data-tab="trips">Trips</button>
+        <button class="tab" data-tab="reserves">Reserve</button>
+        <button class="tab" data-tab="training">Training</button>
+      </div>
+      <span class="tab-divider" aria-hidden="true"></span>
+      <div class="tab-group tab-group-jumps" aria-label="Page jumps">
+        <span class="tab-jump-buttons">
+          <button class="tab tab-jump" data-view-target="calendar">Calendar</button>
+          <button class="tab tab-jump" data-view-target="filters">Filters</button>
+          <button class="tab tab-jump" data-view-target="results">Results</button>
+        </span>
+        <section id="bidWindowBanner" class="bid-window-banner" aria-live="polite">
+          <span id="bidWindowMessage">BID WINDOW INFORMATION. STANDBY.</span>
+        </section>
+        <button class="tab" data-tab="selection">Bid Selection</button>
+      </div>
+    </nav>
+
+    <div id="newUserSplashModal" class="new-user-splash-modal" hidden>
+      <div class="new-user-splash-backdrop" data-close-new-user-splash></div>
+      <div class="new-user-splash-card" role="dialog" aria-modal="true" aria-labelledby="newUserSplashTitle" aria-describedby="newUserSplashMessage">
+        <div class="new-user-splash-header">
+          <div>
+            <p class="eyebrow">Welcome</p>
+            <h2 id="newUserSplashTitle">Welcome to CrewBidPro Full Access</h2>
+          </div>
+          <button id="closeNewUserSplash" type="button" class="btn-secondary">Close</button>
+        </div>
+        <div class="new-user-splash-body">
+          <p id="newUserSplashMessage">You’ve been granted a one-month Full Access subscription at no charge, so you can try every CrewBidPro feature. It will not renew automatically. When the month ends, your account will move to the Free tier with limited options. Paid features will remain visible but locked until you subscribe.</p>
+          <div class="new-user-splash-steps" aria-label="Getting started">
+            <button type="button" class="new-user-splash-step" data-new-user-destination="profile">
+              <strong>1. Complete Crew Profile</strong>
+              <span>Set your preferences so the workspace can highlight what matters to you.</span>
+            </button>
+            <button type="button" class="new-user-splash-step" data-new-user-destination="import">
+              <strong>2. Load a bid package</strong>
+              <span>To load a bid package, select Import beside the current bid package banner. Choose an available CrewBidPro package, or upload the Overview workbook plus Trips and Lines PDFs together.</span>
+            </button>
+            <button type="button" class="new-user-splash-step" data-new-user-destination="workspace">
+              <strong>3. Explore the workspace</strong>
+              <span>Start with Home &gt; Lines. Then check Trips, Reserve, Training, Calendar, Filters, and Bid Selection when you are ready.</span>
+            </button>
+          </div>
+          <div class="new-user-splash-actions">
+            <a id="newUserOpenProfile" href="profile.html?firstTime=1" class="btn-primary topbar-action-link">Profile</a>
+            <button id="newUserOpenImport" type="button" class="btn-secondary">Import</button>
+            <button id="newUserStartWorkspace" type="button" class="btn-secondary">Workspace</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <main>
+      <section class="import-panel accordion-section panel" id="importPanel" aria-labelledby="importTitle">
+        <div class="section-header">
+          <div>
+          <p class="eyebrow">Import</p>
+          <h2 id="importTitle">Manage bid packages</h2>
+          <p class="import-help">Import new files, reload your last upload, or switch to CrewBidPro's latest reviewed package.</p>
+          </div>
+          <button type="button" class="accordion-toggle" aria-expanded="true" aria-controls="importContent" data-accordion-target="importContent">
+            <span class="accordion-toggle-label">Collapse</span>
+            <span class="accordion-chevron" aria-hidden="true"></span>
+          </button>
+        </div>
+        <div id="importContent" class="accordion-content import-content">
+        <section class="current-package-strip" aria-labelledby="currentPackageTitle">
+          <div class="current-package-primary">
+            <p class="eyebrow">Current</p>
+            <h3 id="currentPackageTitle">Please upload or select a bid package.</h3>
+            <p id="currentPackageStatus" class="current-package-status">Please upload or select a bid package.</p>
+            <p id="offlinePackageStatus" class="offline-package-status">Offline cache not ready.</p>
+          </div>
+        </section>
+        <div class="package-management-grid" aria-label="Bid package management">
+          <section class="package-card import-new-files-card" aria-labelledby="importFilesTitle">
+            <div class="package-card-header">
+              <p class="eyebrow">File Import Tool</p>
+              <h3 id="importFilesTitle">Upload bid package documents</h3>
+              <p class="package-card-status">Choose the Overview workbook plus Trips and Lines PDFs together. A successful import becomes your last uploaded package.</p>
+            </div>
+            <div class="import-controls">
+              <label class="import-file-picker">
+                Bid package files
+                <input id="importFiles" type="file" accept=".xlsx,.pdf" multiple>
+                <span class="import-file-help">
+                  <strong>HOW TO SELECT MULTIPLE FILES:</strong>
+                  <span>Mac - hold Command and click each file.</span>
+                  <span>Windows - hold Ctrl and click each file.</span>
+                  <span>iPad - tap Select, then tap each file.</span>
+                </span>
+              </label>
+              <div class="import-actions">
+                <div class="import-action-row">
+                  <button id="executeImport" type="button" class="btn-primary">Import</button>
+                  <button id="resetImport" type="button" class="btn-secondary">Reset</button>
+                </div>
+              </div>
+            </div>
+            <div id="importStatus" class="import-status">No files chosen.</div>
+          </section>
+          <section class="package-card available-packages-card" aria-labelledby="availablePackagesTitle">
+            <div class="package-card-header">
+              <p class="eyebrow">Available Packages</p>
+              <h3 id="availablePackagesTitle">Load an existing package</h3>
+              <p class="package-card-status">Use one of these when you do not need to pick source files again.</p>
+            </div>
+            <div class="available-package-list">
+              <section class="available-package-option saved-package-panel" aria-labelledby="savedPackageTitle">
+                <div class="package-card-header">
+                  <p class="eyebrow">Your Uploaded Packages</p>
+                  <h3 id="savedPackageTitle">No files found. Please upload a package.</h3>
+                  <p id="savedPackageStatus" class="package-card-status">Sign in and import a package to save it for later.</p>
+                </div>
+                <dl class="package-details">
+                  <div hidden>
+                    <dt>Fleet</dt>
+                    <dd id="savedPackageFleet">None</dd>
+                  </div>
+                  <dd id="savedPackagePeriod" hidden>Not loaded</dd>
+                  <div>
+                    <dt>Last Upload</dt>
+                    <dd id="savedPackageSavedAt">No previous uploads.</dd>
+                  </div>
+                  <div>
+                    <dt>Bid Month</dt>
+                    <dd id="savedPackageMonth">No data available.</dd>
+                  </div>
+                </dl>
+                <div class="package-fleet-actions" aria-label="Load uploaded package fleet">
+                  <button id="loadSavedPackage777" type="button" class="btn-secondary package-fleet-action" data-package-source="saved" data-package-fleet="777" disabled>777</button>
+                  <button id="loadSavedPackage747" type="button" class="btn-secondary package-fleet-action" data-package-source="saved" data-package-fleet="747" disabled>747</button>
+                </div>
+                <button id="removeUploadedPackages" type="button" class="btn-secondary package-remove-action" disabled>Remove my uploaded packages</button>
+                <p class="package-card-status package-retention-note">Your newest two bid months per fleet are kept automatically. This removes only your private uploads, never CrewBidPro packages.</p>
+              </section>
+              <section id="globalPackageNotice" class="available-package-option global-package-notice" aria-labelledby="globalPackageTitle">
+                <div class="package-card-header">
+                  <p class="eyebrow">CrewBidPro Latest</p>
+                  <h3 id="globalPackageTitle">No packages available at this time.</h3>
+                  <p id="globalPackageSummary" class="package-card-status">When available, buttons will be enabled.</p>
+                </div>
+                <dl class="package-details">
+                  <div>
+                    <dt>Last Update</dt>
+                    <dd id="globalPackageSavedAt">No previous uploads.</dd>
+                  </div>
+                  <div>
+                    <dt>Bid Month</dt>
+                    <dd id="globalPackageMonth">No data available.</dd>
+                  </div>
+                </dl>
+                <div class="package-fleet-actions" aria-label="Load CrewBidPro package fleet">
+                  <button id="loadGlobalPackage777" type="button" class="btn-primary package-fleet-action" data-package-source="global" data-package-fleet="777" disabled>777</button>
+                  <button id="loadGlobalPackage747" type="button" class="btn-primary package-fleet-action" data-package-source="global" data-package-fleet="747" disabled>747</button>
+                </div>
+              </section>
+            </div>
+          </section>
+        </div>
+        </div>
+      </section>
+      <section class="summary-grid" id="summaryGrid"></section>
+
+      <section id="workspaceControlsDeck" class="workspace-controls-deck" aria-label="Schedule and current filters">
+        <section class="calendar-panel accordion-section" data-feature="avoidCalendar">
+          <div class="section-header calendar-header">
+            <div>
+              <p class="eyebrow">Schedule</p>
+              <h2>Days to avoid</h2>
+            </div>
+            <div class="calendar-actions">
+              <button id="clearAvoidDays" type="button" class="btn-primary">Clear Dates</button>
+              <button type="button" class="accordion-toggle" aria-expanded="true" aria-controls="calendarContent" data-accordion-target="calendarContent">
+                <span class="accordion-toggle-label">Collapse</span>
+                <span class="accordion-chevron" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
+          <div id="calendarContent" class="accordion-content">
+            <div id="avoidCalendar" class="avoid-calendar"></div>
+          </div>
+        </section>
+        <div id="activeFiltersSlot" class="active-filters-slot"></div>
+      </section>
+
+      <section class="panel is-active" id="linesPanel">
+        <div id="lineFiltersContent" class="filters">
+          <div class="section-header filter-section-header filter-reset-row">
+            <div>
+              <p class="eyebrow">Filter</p>
+              <h2>Line filters</h2>
+            </div>
+            <div class="section-actions">
+            <button id="resetLineFilters" type="button" class="btn-primary reset-lines-btn">RESET LINES</button>
+              <button type="button" class="accordion-toggle" aria-expanded="true" aria-controls="lineFiltersContent" data-accordion-target="lineFiltersContent">
+                <span class="accordion-toggle-label">Collapse</span>
+                <span class="accordion-chevron" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
+          <section class="filter-cluster filter-cluster-crew" aria-label="Credit and crew line filters">
+            <h3>Credit & Crew</h3>
+            <div class="filter-cluster-controls">
+              <label data-line-credit-sort>
+                Credit sort
+                <select id="lineCreditSort">
+                  <option value="" selected>No Filter</option>
+                  <option value="creditDesc">Highest credit</option>
+                  <option value="creditAsc">Lowest credit</option>
+                </select>
+              </label>
+              <label>
+                Minimum guarantee
+                <select id="lineGuarantee">
+                  <option value="">Show All Lines</option>
+                  <option value="below">Below 64 hours</option>
+                  <option value="above">64 hours and above</option>
+                </select>
+              </label>
+              <label>
+                Crew
+                <select id="lineCrew">
+                  <option value="" selected>No Filter</option>
+                </select>
+              </label>
+            </div>
+          </section>
+          <section class="filter-cluster filter-cluster-schedule" aria-label="Days and duty line filters">
+            <h3>Days & Duty</h3>
+            <div class="filter-cluster-controls">
+              <label data-feature="advancedLineFilters">
+                Duty days
+                <select id="lineDutyDays">
+                  <option value="" selected>No Filter</option>
+                </select>
+              </label>
+              <label data-feature="advancedLineFilters">
+                Days off
+                <select id="lineDaysOff">
+                  <option value="" selected>No Filter</option>
+                </select>
+              </label>
+              <label data-feature="advancedLineFilters">
+                CARRY-IN DAYS
+                <select id="lineCarry">
+                  <option value="">No Filter</option>
+                  <option value="hidden">Hidden</option>
+                  <option value="only">Only Carry-In Days</option>
+                </select>
+              </label>
+              <label data-feature="advancedLineFilters">
+                SPLIT LINE
+                <select id="lineSplit">
+                  <option value="">No Filter</option>
+                  <option value="hidden">Hidden</option>
+                  <option value="only">Only Split Lines</option>
+                </select>
+              </label>
+            </div>
+          </section>
+          <section class="filter-cluster filter-cluster-airports" aria-label="Airport line filters">
+            <h3>Airports</h3>
+            <div class="filter-cluster-controls">
+              <label data-feature="advancedLineFilters">
+                CITY - START
+                <select id="lineStart">
+                  <option value="" selected>No Filter</option>
+                </select>
+              </label>
+              <label data-feature="advancedLineFilters">
+                CITY - END
+                <select id="lineEnd">
+                  <option value="" selected>No Filter</option>
+                </select>
+              </label>
+              <label data-feature="advancedLineFilters">
+                CITY - STAY/REST
+                <select id="lineThrough">
+                  <option value="" selected>No Filter</option>
+                </select>
+              </label>
+            </div>
+          </section>
+          <section class="filter-cluster filter-cluster-misc" aria-label="Miscellaneous line filters">
+            <h3>Miscellaneous</h3>
+            <div class="filter-cluster-controls">
+              <label data-feature="advancedLineFilters">
+                DEADHEADS
+                <select id="lineDeadheads">
+                  <option value="">No Filter</option>
+                  <option value="hidden">Hidden</option>
+                  <option value="only">Show Deadheads only</option>
+                </select>
+              </label>
+              <label data-feature="advancedLineFilters">
+                LONG STAY
+                <select id="lineLongStay">
+                  <option value="">No Filter</option>
+                  <option value="only">Show Only</option>
+                </select>
+              </label>
+              <label data-feature="advancedLineFilters">
+                TRIP START - BREAKFAST FRIENDLY
+                <select id="lineBreakfastFriendly">
+                  <option value="">No Filter</option>
+                  <option value="on">Show Only</option>
+                </select>
+              </label>
+            </div>
+          </section>
+        </div>
+        <div id="linesPanelNavigation" class="lines-panel-navigation" data-bid-panel-navigation="lines" data-navigation-label="Flying Lines">
+          <button
+            id="linesPanelNavigationToggle"
+            type="button"
+            class="lines-panel-navigation-toggle"
+            aria-expanded="false"
+            aria-controls="linesPanelNavigationMenu"
+            aria-label="Open Flying Lines section navigation"
+            data-bid-panel-navigation-toggle
+          >
+            <span class="lines-panel-navigation-toggle-icon" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span>Jump</span>
+          </button>
+          <button
+            type="button"
+            class="lines-panel-navigation-backdrop"
+            data-lines-navigation-dismiss
+            aria-label="Close Flying Lines section navigation"
+            hidden
+          ></button>
+          <nav id="linesPanelNavigationMenu" class="lines-panel-navigation-menu" aria-label="Jump within Flying Lines" hidden>
+            <div class="lines-panel-navigation-header">
+              <span><small>Flying Lines</small><strong>Jump to</strong></span>
+              <button type="button" class="lines-panel-navigation-close" data-lines-navigation-dismiss aria-label="Close Flying Lines section navigation">&times;</button>
+            </div>
+            <button type="button" class="lines-panel-navigation-button" data-lines-navigation-target="filters" aria-controls="lineFiltersContent">Filters</button>
+            <button type="button" class="lines-panel-navigation-button" data-lines-navigation-target="selected" aria-controls="lines-results-selected" disabled>Selected</button>
+            <button type="button" class="lines-panel-navigation-button" data-lines-navigation-target="available" aria-controls="lines-results-available" disabled>Available</button>
+            <button type="button" class="lines-panel-navigation-button" data-lines-navigation-target="unavailable" aria-controls="lines-results-unavailable" disabled>Unavailable</button>
+          </nav>
+        </div>
+        <div class="lines-panel-content">
+        <section class="city-avoid-panel" aria-label="CITY - AVOID" data-feature="cityAvoid">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">City - Avoid</p>
+              <h2>Avoid airports</h2>
+            </div>
+            <div class="section-actions">
+              <button type="button" class="btn-primary reset-cities-btn" data-city="">RESET CITIES</button>
+              <button type="button" class="accordion-toggle" aria-expanded="true" aria-controls="lineAvoid" data-accordion-target="lineAvoid">
+                <span class="accordion-toggle-label">Collapse</span>
+                <span class="accordion-chevron" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
+          <div id="lineAvoid" class="airport-avoid"></div>
+        </section>
+        <div class="bid-list-panel" aria-live="polite">
+          <div class="bid-list-summary">
+            <div>
+              <p class="eyebrow">Bid List</p>
+              <h3 class="bid-list-title">No lines selected</h3>
+            </div>
+            <div class="bid-list-actions">
+              <button type="button" class="btn-secondary bid-list-show" aria-pressed="false">Show Selected</button>
+              <button type="button" class="btn-secondary bid-list-clear">Clear Bid List</button>
+            </div>
+          </div>
+          <div class="bid-list-items">Select lines from the table to build your ranked bid list.</div>
+        </div>
+        <div class="results-block">
+          <div id="lineResultsHeader" class="result-header line-result-header">
+            <div>
+              <h2>Flying Lines</h2>
+              <span id="lineCount"></span>
+              <span class="line-count-context">lines in the current view</span>
+              <div class="line-view-switch" role="group" aria-label="Flying Lines view">
+                <span class="line-view-switch-label" aria-hidden="true">View</span>
+                <button type="button" class="line-view-switch-button is-active" data-line-view="table" aria-pressed="true">Table</button>
+                <button type="button" class="line-view-switch-button" data-line-view="calendar" aria-pressed="false">Linear</button>
+              </div>
+            </div>
+            <div class="result-tools line-result-tools has-applicable-toggle" aria-label="Line result tools">
+              <label>
+                Search
+                <input id="lineSearch" type="search" placeholder="Line, trip, airport, route">
+              </label>
+              <label>
+                Line Sort
+                <select id="lineSort">
+                  <option value="" selected>Default order</option>
+                  <optgroup label="Value">
+                    <option value="moneyLineDesc">MoneyLine™ - Highest</option>
+                    <option value="creditDesc">Credit - Highest</option>
+                    <option value="creditAsc">Credit - Lowest</option>
+                    <option value="carryDesc">Carry-In - Highest</option>
+                    <option value="carryAsc">Carry-In - Lowest</option>
+                  </optgroup>
+                  <optgroup label="Schedule">
+                    <option value="dutyAsc">Duty Days - Fewest</option>
+                    <option value="dutyDesc">Duty Days - Most</option>
+                    <option value="daysOffDesc">Days Off - Most</option>
+                    <option value="daysOffAsc">Days Off - Fewest</option>
+                    <option value="calendarStartAsc">Calendar Start - Earliest</option>
+                    <option value="calendarStartDesc">Calendar Start - Latest</option>
+                    <option value="lineStartAsc">First Show - Earliest</option>
+                    <option value="lineStartDesc">First Show - Latest</option>
+                  </optgroup>
+                  <optgroup label="Travel &amp; Rest">
+                    <option value="fatigueAsc">Fatigue - Low to High</option>
+                    <option value="fatigueDesc">Fatigue - High to Low</option>
+                    <option value="deadheadAsc" data-paid-sort>Deadhead - Least</option>
+                    <option value="deadheadDesc" data-paid-sort>Deadhead - Most</option>
+                    <option value="sitAsc" data-paid-sort>Hotel Rest - Shortest</option>
+                    <option value="sitDesc" data-paid-sort>Hotel Rest - Longest</option>
+                  </optgroup>
+                  <optgroup label="Line Number">
+                    <option value="nameAsc">Lowest first</option>
+                    <option value="nameDesc">Highest first</option>
+                  </optgroup>
+                </select>
+              </label>
+              <div class="filter-group result-toggle-group line-show-options-group">
+                Show
+                <div class="line-show-options">
+                  <div class="line-show-option">
+                    <label class="result-checkbox-label">
+                      <input type="checkbox" data-moneyline-toggle>
+                      <span>MoneyLine™</span>
+                    </label>
+                  </div>
+                  <div class="line-show-option has-help">
+                    <label class="result-checkbox-label">
+                      <input type="checkbox" data-fatigue-toggle checked>
+                      <span>Fatigue Score</span>
+                    </label>
+                    <button type="button" class="line-show-help-button" data-fatigue-help aria-label="How Fatigue Score works" title="How Fatigue Score works">?</button>
+                  </div>
+                  <div class="line-show-option has-help">
+                    <label class="result-checkbox-label">
+                      <input type="checkbox" data-line-start-toggle checked>
+                      <span>Start Date/Time</span>
+                    </label>
+                    <button type="button" class="line-show-help-button" data-line-start-help aria-label="What Start Date/Time means" title="What Start Date/Time means">?</button>
+                  </div>
+                  <div class="line-show-option">
+                    <label class="result-checkbox-label">
+                      <input id="lineAvailableToggle" type="checkbox" data-available-plus-submitted-toggle>
+                      <span>Available + submitted</span>
+                    </label>
+                  </div>
+                  <div class="line-show-option has-help">
+                    <label class="result-checkbox-label">
+                      <input type="checkbox" data-remark-pill-toggle="longStay">
+                      <span>LONG STAY</span>
+                    </label>
+                    <button type="button" class="line-show-help-button" data-long-stay-help aria-label="What Long Stay means and change its threshold" title="What Long Stay means and change its threshold">?</button>
+                  </div>
+                  <div class="line-show-option">
+                    <label class="result-checkbox-label">
+                      <input type="checkbox" data-remark-pill-toggle="crewResults">
+                      <span>AWARDED / PROJECTED</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p id="moneyLineSortNotice" class="moneyline-sort-notice" role="status" hidden></p>
+            <div id="lineBulkSelection" class="result-bulk-selection" data-bulk-selection-scope="lines"></div>
+          </div>
+          <div id="lineTableView" class="table-wrap line-results-view" data-line-results-view="table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Line</th>
+                  <th>Crew</th>
+                  <th class="right-header">Credit</th>
+                  <th class="center-header">Duty</th>
+                  <th class="center-header">Off</th>
+                  <th class="nowrap-header">CARRY-IN</th>
+                  <th class="center-header ipad-only-dh">DH</th>
+                  <th>BREAKDOWN</th>
+                  <th class="center-header desktop-dh-header">DH</th>
+                  <th class="line-airports-header">Airports</th>
+                  <th class="line-remarks-header">Remarks</th>
+                </tr>
+              </thead>
+              <tbody id="linesTable"></tbody>
+            </table>
+          </div>
+          <section id="lineCalendarView" class="line-calendar-view line-results-view" data-line-results-view="calendar" aria-labelledby="lineCalendarTitle" hidden>
+            <div class="line-calendar-toolbar">
+              <div>
+                <p class="eyebrow">Schedule comparison</p>
+                <h3 id="lineCalendarTitle">Linear View</h3>
+                <p id="lineCalendarSummary" class="line-calendar-summary"></p>
+              </div>
+              <button id="lineCalendarCollapse" type="button" class="accordion-toggle line-calendar-collapse" aria-expanded="true" aria-controls="lineCalendarTimeline">
+                <span class="accordion-toggle-label">Collapse</span>
+                <span class="accordion-chevron" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div id="lineCalendarTimeline" class="line-calendar-timeline"></div>
+          </section>
+        </div>
+        </div>
+      </section>
+
+      <section class="panel" id="tripsPanel">
+        <div id="tripFiltersContent" class="filters">
+          <div class="section-header filter-section-header filter-reset-row">
+            <div>
+              <p class="eyebrow">Filter</p>
+              <h2>Trip filters</h2>
+            </div>
+            <div class="section-actions">
+            <button id="resetTripFilters" type="button" class="btn-primary reset-lines-btn">RESET TRIPS</button>
+              <button type="button" class="accordion-toggle" aria-expanded="true" aria-controls="tripFiltersContent" data-accordion-target="tripFiltersContent">
+                <span class="accordion-toggle-label">Collapse</span>
+                <span class="accordion-chevron" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
+          <section class="filter-cluster filter-cluster-trip-crew" aria-label="Trip credit and crew filters">
+            <h3>Credit & Crew</h3>
+            <div class="filter-cluster-controls">
+              <label>
+                Minimum guarantee
+                <select id="tripGuarantee">
+                  <option value="">Show All Trips</option>
+                  <option value="below">Below 64 hours</option>
+                  <option value="above">64 hours and above</option>
+                </select>
+              </label>
+              <label>
+                Crew
+                <select id="tripCrew">
+                  <option value="" selected>No Filter</option>
+                </select>
+              </label>
+            </div>
+          </section>
+          <section class="filter-cluster filter-cluster-trip-airports" aria-label="Trip airport filters">
+            <h3>Airports</h3>
+            <div class="filter-cluster-controls">
+              <label data-feature="advancedTripFilters">
+                CITY - START
+                <select id="tripStart">
+                  <option value="" selected>No Filter</option>
+                </select>
+              </label>
+              <label data-feature="advancedTripFilters">
+                CITY - END
+                <select id="tripEnd">
+                  <option value="" selected>No Filter</option>
+                </select>
+              </label>
+              <label data-feature="advancedTripFilters">
+                CITY - STAY/REST
+                <select id="tripThrough">
+                  <option value="" selected>No Filter</option>
+                </select>
+              </label>
+            </div>
+          </section>
+          <section class="filter-cluster filter-cluster-trip-misc" aria-label="Miscellaneous trip filters">
+            <h3>Miscellaneous</h3>
+            <div class="filter-cluster-controls">
+              <label data-feature="advancedTripFilters">
+                DEADHEADS
+                <select id="tripDeadheads">
+                  <option value="">No Filter</option>
+                  <option value="hidden">Hidden</option>
+                </select>
+              </label>
+              <label data-feature="advancedTripFilters">
+                LONG STAY
+                <select id="tripLongStay">
+                  <option value="">No Filter</option>
+                  <option value="only">Show Only</option>
+                </select>
+              </label>
+            </div>
+          </section>
+        </div>
+        <section class="city-avoid-panel" aria-label="CITY - AVOID" data-feature="cityAvoid">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">City - Avoid</p>
+              <h2>Avoid airports</h2>
+            </div>
+            <div class="section-actions">
+              <button type="button" class="btn-primary reset-cities-btn" data-city="">RESET CITIES</button>
+              <button type="button" class="accordion-toggle" aria-expanded="true" aria-controls="tripAvoid" data-accordion-target="tripAvoid">
+                <span class="accordion-toggle-label">Collapse</span>
+                <span class="accordion-chevron" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
+          <div id="tripAvoid" class="airport-avoid"></div>
+        </section>
+        <div id="tripResultsHeader" class="result-header">
+          <div>
+            <h2>Trips</h2>
+            <span id="tripCount"></span>
+          </div>
+          <div class="result-tools" aria-label="Trip result tools">
+            <label>
+              Search
+              <input id="tripSearch" type="search" placeholder="Trip, airport, route">
+            </label>
+            <label>
+              Trip Sort
+              <select id="tripSort">
+                <option value="" selected>No Filter</option>
+                <option value="idAsc">Trip Number - Lowest</option>
+                <option value="creditDesc">Credit - Highest</option>
+                <option value="creditAsc">Credit - Lowest</option>
+                <option value="sitAsc" data-paid-sort>Hotel Rest - Shortest</option>
+                <option value="sitDesc" data-paid-sort>Hotel Rest - Longest</option>
+                <option value="carryDesc">Carry-In - Most</option>
+                <option value="dutyAsc">Duty Days - Fewest</option>
+              </select>
+            </label>
+            <div class="filter-group result-toggle-group remark-pill-toggle-group">
+              Show
+              <div class="remark-pill-toggle-options">
+                <label class="result-checkbox-label">
+                  <input type="checkbox" data-remark-pill-toggle="longStay">
+                  <span>LONG STAY</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Trip</th>
+                <th>STARTS ON</th>
+                <th>Crew</th>
+                <th class="center-header">Credit</th>
+                <th class="center-header">Block</th>
+                <th class="center-header">Duty</th>
+                <th class="center-header">Carry-In</th>
+                <th class="center-header">DH</th>
+                <th>Route</th>
+                <th>Remarks</th>
+              </tr>
+            </thead>
+            <tbody id="tripsTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" id="reservesPanel">
+        <div id="reserveFiltersContent" class="filters">
+          <div class="section-header filter-section-header filter-reset-row">
+            <div>
+              <p class="eyebrow">Filter</p>
+              <h2>Reserve filters</h2>
+            </div>
+            <div class="section-actions">
+            <button id="resetReserveFilters" type="button" class="btn-primary reset-lines-btn">RESET RESERVE</button>
+              <button type="button" class="accordion-toggle" aria-expanded="true" aria-controls="reserveFiltersContent" data-accordion-target="reserveFiltersContent">
+                <span class="accordion-toggle-label">Collapse</span>
+                <span class="accordion-chevron" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
+          <section class="filter-cluster filter-cluster-reserve" aria-label="Reserve line filters">
+            <h3>Reserve</h3>
+            <div class="filter-cluster-controls">
+              <label data-feature="reserveFilters">
+                Reserve Window
+                <select id="reserveStart">
+                  <option value="" selected>No Filter</option>
+                </select>
+              </label>
+              <label data-feature="reserveFilters">
+                <span class="filter-label-with-help">
+                  View
+                  <button
+                    type="button"
+                    class="filter-help"
+                    aria-label="What is FLEX RSV?"
+                    data-help-title="What is FLEX RSV?"
+                    data-help-message="FLEX RSV marks a reserve block that may be handled separately from the flying portion of the line. Depending on Crew Scheduling and crew coordination, those reserve days may remain separate, be tied to the flying portion, or sometimes be dropped from the schedule. FLEX RSV does not automatically mean the line is a split line."
+                  >?</button>
+                </span>
+                <select id="reserveFlex">
+                  <option value="" selected>No Filter</option>
+                  <option value="reserveOnly">Show Reserve Lines Only</option>
+                  <option value="flexOnly">Show Flex Reserve Lines Only</option>
+                </select>
+              </label>
+              <label>
+                Crew
+                <select id="reserveCrew">
+                  <option value="" selected>No Filter</option>
+                </select>
+              </label>
+            </div>
+          </section>
+        </div>
+        <div id="reservePanelNavigation" class="lines-panel-navigation" data-bid-panel-navigation="reserves" data-navigation-label="Reserve Lines">
+          <button
+            id="reservePanelNavigationToggle"
+            type="button"
+            class="lines-panel-navigation-toggle"
+            aria-expanded="false"
+            aria-controls="reservePanelNavigationMenu"
+            aria-label="Open Reserve Lines section navigation"
+            data-bid-panel-navigation-toggle
+          >
+            <span class="lines-panel-navigation-toggle-icon" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span>Jump</span>
+          </button>
+          <button
+            type="button"
+            class="lines-panel-navigation-backdrop"
+            data-lines-navigation-dismiss
+            aria-label="Close Reserve Lines section navigation"
+            hidden
+          ></button>
+          <nav id="reservePanelNavigationMenu" class="lines-panel-navigation-menu" aria-label="Jump within Reserve Lines" hidden>
+            <div class="lines-panel-navigation-header">
+              <span><small>Reserve Lines</small><strong>Jump to</strong></span>
+              <button type="button" class="lines-panel-navigation-close" data-lines-navigation-dismiss aria-label="Close Reserve Lines section navigation">&times;</button>
+            </div>
+            <button type="button" class="lines-panel-navigation-button" data-lines-navigation-target="filters" aria-controls="reserveFiltersContent">Filters</button>
+            <button type="button" class="lines-panel-navigation-button" data-lines-navigation-target="selected" aria-controls="reserves-results-selected" disabled>Selected</button>
+            <button type="button" class="lines-panel-navigation-button" data-lines-navigation-target="available" aria-controls="reserves-results-available" disabled>Available</button>
+            <button type="button" class="lines-panel-navigation-button" data-lines-navigation-target="unavailable" aria-controls="reserves-results-unavailable" disabled>Unavailable</button>
+          </nav>
+        </div>
+        <div class="bid-list-panel" aria-live="polite">
+          <div class="bid-list-summary">
+            <div>
+              <p class="eyebrow">Bid List</p>
+              <h3 class="bid-list-title">No lines selected</h3>
+            </div>
+            <div class="bid-list-actions">
+              <button type="button" class="btn-secondary bid-list-show" aria-pressed="false">Show Selected</button>
+              <button type="button" class="btn-secondary bid-list-clear">Clear Bid List</button>
+            </div>
+          </div>
+          <div class="bid-list-items">Select lines from the table to build your ranked bid list.</div>
+        </div>
+        <div id="reserveResultsHeader" class="result-header">
+          <div>
+            <h2>Reserve Lines</h2>
+            <span id="reserveCount"></span>
+          </div>
+          <div class="result-tools has-applicable-toggle" aria-label="Reserve result tools">
+            <label>
+              Search
+              <input id="reserveSearch" type="search" placeholder="Reserve line">
+            </label>
+            <label>
+              Line Sort
+              <select id="reserveSort">
+                <option value="" selected>No Filter</option>
+                <option value="dateAsc">Date</option>
+                <option value="daysAsc">Reserve Days - Low to High</option>
+                <option value="daysDesc">Reserve Days - High to Low</option>
+                <option value="deadheadDesc" data-paid-sort>DH - High to Low</option>
+                <option value="deadheadAsc" data-paid-sort>DH - Low to High</option>
+              </select>
+            </label>
+            <div class="filter-group result-toggle-group availability-toggle-group">
+              What's Available Now?
+              <label class="result-checkbox-label">
+                <input id="reserveAvailableToggle" type="checkbox" data-available-plus-submitted-toggle>
+                <span>Available + submitted</span>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div id="reserveBulkSelection" class="result-bulk-selection" data-bulk-selection-scope="reserves"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Line</th>
+                <th>Crew</th>
+                <th class="center-header">Credit</th>
+                <th class="center-header">DH</th>
+                <th>RSV WINDOW</th>
+                <th class="center-header">RSV DAYS</th>
+                <th>BREAKDOWN</th>
+                <th class="reserve-remarks-header">Remarks</th>
+              </tr>
+            </thead>
+            <tbody id="reservesTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" id="trainingPanel">
+        <div id="trainingFiltersContent" class="filters">
+          <div class="section-header filter-section-header filter-reset-row">
+            <div>
+              <p class="eyebrow">Filter</p>
+              <h2>Training filters</h2>
+            </div>
+            <div class="section-actions">
+              <button id="resetTrainingFilters" type="button" class="btn-primary reset-lines-btn">RESET TRAINING</button>
+              <button type="button" class="accordion-toggle" aria-expanded="true" aria-controls="trainingFiltersContent" data-accordion-target="trainingFiltersContent">
+                <span class="accordion-toggle-label">Collapse</span>
+                <span class="accordion-chevron" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
+          <section class="filter-cluster filter-cluster-training" aria-label="Training line filters">
+            <h3>Training</h3>
+            <div class="filter-cluster-controls">
+              <label data-feature="trainingFilters">
+                Training Window
+                <select id="trainingStart">
+                  <option value="" selected>No Filter</option>
+                </select>
+              </label>
+              <label data-feature="trainingFilters">
+                Training Placement
+                <select id="trainingPlacement">
+                  <option value="" selected>No Filter</option>
+                  <option value="front">Front Half - Show Only</option>
+                  <option value="back">Back Half - Show Only</option>
+                </select>
+              </label>
+              <label>
+                Crew
+                <select id="trainingCrew">
+                  <option value="" selected>No Filter</option>
+                </select>
+              </label>
+            </div>
+          </section>
+        </div>
+        <div id="trainingPanelNavigation" class="lines-panel-navigation" data-bid-panel-navigation="training" data-navigation-label="Training Lines">
+          <button
+            id="trainingPanelNavigationToggle"
+            type="button"
+            class="lines-panel-navigation-toggle"
+            aria-expanded="false"
+            aria-controls="trainingPanelNavigationMenu"
+            aria-label="Open Training Lines section navigation"
+            data-bid-panel-navigation-toggle
+          >
+            <span class="lines-panel-navigation-toggle-icon" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span>Jump</span>
+          </button>
+          <button
+            type="button"
+            class="lines-panel-navigation-backdrop"
+            data-lines-navigation-dismiss
+            aria-label="Close Training Lines section navigation"
+            hidden
+          ></button>
+          <nav id="trainingPanelNavigationMenu" class="lines-panel-navigation-menu" aria-label="Jump within Training Lines" hidden>
+            <div class="lines-panel-navigation-header">
+              <span><small>Training Lines</small><strong>Jump to</strong></span>
+              <button type="button" class="lines-panel-navigation-close" data-lines-navigation-dismiss aria-label="Close Training Lines section navigation">&times;</button>
+            </div>
+            <button type="button" class="lines-panel-navigation-button" data-lines-navigation-target="filters" aria-controls="trainingFiltersContent">Filters</button>
+            <button type="button" class="lines-panel-navigation-button" data-lines-navigation-target="selected" aria-controls="training-results-selected" disabled>Selected</button>
+            <button type="button" class="lines-panel-navigation-button" data-lines-navigation-target="available" aria-controls="training-results-available" disabled>Available</button>
+            <button type="button" class="lines-panel-navigation-button" data-lines-navigation-target="unavailable" aria-controls="training-results-unavailable" disabled>Unavailable</button>
+          </nav>
+        </div>
+        <div class="bid-list-panel" aria-live="polite">
+          <div class="bid-list-summary">
+            <div>
+              <p class="eyebrow">Bid List</p>
+              <h3 class="bid-list-title">No lines selected</h3>
+            </div>
+            <div class="bid-list-actions">
+              <button type="button" class="btn-secondary bid-list-show" aria-pressed="false">Show Selected</button>
+              <button type="button" class="btn-secondary bid-list-clear">Clear Bid List</button>
+            </div>
+          </div>
+          <div class="bid-list-items">Select lines from the table to build your ranked bid list.</div>
+        </div>
+        <div id="trainingResultsHeader" class="result-header">
+          <div>
+            <h2>Training Lines</h2>
+            <span id="trainingCount"></span>
+          </div>
+          <div class="result-tools has-applicable-toggle" aria-label="Training result tools">
+            <label>
+              Search
+              <input id="trainingSearch" type="search" placeholder="Training line or crew">
+            </label>
+            <label>
+              Line Sort
+              <select id="trainingSort">
+                <option value="" selected>No Filter</option>
+                <option value="lineAsc">Line Number - Lowest</option>
+                <option value="lineDesc">Line Number - Highest</option>
+              </select>
+            </label>
+            <div class="filter-group result-toggle-group availability-toggle-group">
+              What's Available Now?
+              <label class="result-checkbox-label">
+                <input id="trainingAvailableToggle" type="checkbox" data-available-plus-submitted-toggle>
+                <span>Available + submitted</span>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div id="trainingBulkSelection" class="result-bulk-selection" data-bulk-selection-scope="training"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Line</th>
+                <th>Crew</th>
+                <th class="center-header">Credit</th>
+                <th class="center-header">Days</th>
+                <th class="center-header">Line Window</th>
+                <th class="center-header">Training</th>
+                <th class="center-header">Pattern</th>
+                <th>Remarks</th>
+              </tr>
+            </thead>
+            <tbody id="trainingTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" id="selectionPanel">
+        <div id="selectionFiltersHeader" class="selection-controls">
+          <div id="selectionFiltersContent" class="selection-filters" aria-label="Displayed bid selection filters">
+            <div class="section-header filter-section-header filter-reset-row selection-filter-header">
+              <div>
+                <p class="eyebrow">Filter</p>
+                <h2>Bid Selection Filters</h2>
+              </div>
+              <div class="section-actions">
+                <button id="resetSelectionFilters" type="button" class="btn-primary reset-lines-btn">RESET FILTERS</button>
+                <button type="button" class="accordion-toggle" aria-expanded="true" aria-controls="selectionFiltersContent" data-accordion-target="selectionFiltersContent">
+                  <span class="accordion-toggle-label">Collapse</span>
+                  <span class="accordion-chevron" aria-hidden="true"></span>
+                </button>
+              </div>
+            </div>
+            <label>
+              Display Sort
+              <select id="selectionSort">
+                <option value="rank" selected>Official Bid Order</option>
+                <option value="rankDesc">Rank - Highest Number First</option>
+                <option value="dutyAsc">Duty Days - Fewest</option>
+                <option value="dutyDesc">Duty Days - Most</option>
+                <option value="avoidConflictsLast">Avoid Conflicts Last</option>
+                <option value="lineAsc">Line Number - Lowest</option>
+                <option value="lineDesc">Line Number - Highest</option>
+                <option value="creditDesc">Credit - Highest</option>
+                <option value="creditAsc">Credit - Lowest</option>
+                <option value="fatigueDesc">Fatigue - High to Low</option>
+                <option value="fatigueAsc">Fatigue - Low to High</option>
+                <option value="lineStartAsc">First Show - Earliest</option>
+                <option value="lineStartDesc">First Show - Latest</option>
+              </select>
+            </label>
+            <label>
+              Selection Type
+              <select id="selectionType">
+                <option value="" selected>No Filter</option>
+                <option value="line">Flying (Only)</option>
+                <option value="mixed">Flying / Reserve</option>
+                <option value="reserve">Reserve (Only)</option>
+                <option value="training">Training (Only)</option>
+              </select>
+            </label>
+            <label>
+              Crew
+              <select id="selectionCrew">
+                <option value="" selected>No Filter</option>
+              </select>
+            </label>
+            <label>
+              Find Selected
+              <input id="selectionSearch" type="search" placeholder="Line, type, crew, detail">
+            </label>
+            <label>
+              Minimum guarantee
+              <select id="selectionGuarantee">
+                <option value="">Show All</option>
+                <option value="below">Below 64 hours</option>
+                <option value="above">64 hours and above</option>
+              </select>
+            </label>
+            <label>
+              Carry-In
+              <select id="selectionCarry">
+                <option value="">No Filter</option>
+                <option value="hidden">Hidden</option>
+                <option value="only">Only Carry-In</option>
+              </select>
+            </label>
+            <label>
+              Split Line
+              <select id="selectionSplit">
+                <option value="">No Filter</option>
+                <option value="hidden">Hidden</option>
+                <option value="only">Only Split Lines</option>
+              </select>
+            </label>
+            <label>
+              Deadheads
+              <select id="selectionDeadheads">
+                <option value="">No Filter</option>
+                <option value="hidden">Hidden</option>
+                <option value="only">Show Deadheads Only</option>
+              </select>
+            </label>
+            <label class="selection-filter-check">
+              <input id="selectionHideAvoidConflicts" type="checkbox">
+              Hide avoid-date conflicts
+            </label>
+            <p id="selectionFilterScope" class="selection-filter-scope">Display filters do not change official bid order or export.</p>
+          </div>
+        </div>
+        <div id="selectionResultsHeader" class="selection-summary">
+          <div class="selection-summary-copy">
+            <p class="eyebrow">Bid Order</p>
+            <h2>Bid Selection</h2>
+            <p id="selectionHelp" class="selection-help">Select lines from any tab to build your official bid order. Display filters only change what is shown on this screen.</p>
+            <p id="selectionSyncStatus" class="selection-sync-status">Selections save automatically per package.</p>
+          </div>
+          <div class="selection-summary-toggles">
+            <label class="selection-moneyline-toggle">
+              <input type="checkbox" data-moneyline-toggle>
+              <span>Show MoneyLine™ dollars</span>
+            </label>
+            <label class="selection-moneyline-toggle">
+              <input type="checkbox" data-fatigue-toggle checked>
+              <span>Show Fatigue Scores</span>
+            </label>
+            <button type="button" class="fatigue-help-link" data-fatigue-help>How scores work</button>
+            <label class="selection-moneyline-toggle">
+              <input type="checkbox" data-line-start-toggle checked>
+              <span>Show Start Date/Time</span>
+            </label>
+            <button type="button" class="fatigue-help-link" data-line-start-help>How times work</button>
+          </div>
+        </div>
+        <p id="selectionMoneyLineNotice" class="moneyline-sort-notice" role="status" hidden></p>
+        <div class="table-wrap selection-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th id="selectionRankHeader" aria-sort="ascending">Rank <span class="selection-rank-sort-controls"><button type="button" data-selection-rank-sort="rank" aria-label="Sort rank ascending" title="Rank: lowest number first">↑</button><button type="button" data-selection-rank-sort="rankDesc" aria-label="Sort rank descending" title="Rank: highest number first">↓</button></span></th>
+                <th>Line</th>
+                <th>Type</th>
+                <th>Crew</th>
+                <th>Credit</th>
+                <th class="selection-hours-header">Carry-In<br><span class="table-header-note">hours</span></th>
+                <th class="selection-hours-header">DH<br><span class="table-header-note">hours</span></th>
+                <th>Details</th>
+                <th>Win Odds</th>
+                <th>CrewBids</th>
+                <th>Remove</th>
+              </tr>
+            </thead>
+            <tbody id="selectionTable"></tbody>
+          </table>
+        </div>
+        <div id="projectedBidResult" class="projected-bid-result" aria-live="polite"></div>
+
+        <section id="selectionOfficialWorkflow" class="selection-official-workflow" aria-labelledby="selectionOfficialWorkflowTitle">
+          <header class="selection-workflow-header">
+            <p class="eyebrow">Official workflow</p>
+            <h2 id="selectionOfficialWorkflowTitle">Review and submit your bid</h2>
+            <p>Prepare CrewBids tools, verify the complete official order, then open the final confirmation.</p>
+          </header>
+
+          <div class="selection-prepare-grid">
+            <section class="selection-workflow-card crewbids-monitor-panel" aria-labelledby="crewbidsMonitorTitle">
+              <header class="selection-card-header">
+                <h3 id="crewbidsMonitorTitle">Kalitta's CrewBids Site</h3>
+              </header>
+              <div class="selection-readiness-block">
+                <div class="selection-readiness-heading">
+                  <div>
+                    <h4>Saved access</h4>
+                    <p>Managed in Crew Profile</p>
+                  </div>
+                  <span id="crewbidsMonitorBadge" class="crewbids-monitor-badge">Checking</span>
+                </div>
+                <p id="crewbidsWorkspaceAccessStatus" class="crewbids-workspace-access-status" aria-live="polite"></p>
+                <div class="crewbids-monitor-actions crewbids-monitor-credential-actions">
+                  <button id="checkCrewbidsConnection" type="button" class="btn-secondary">Check connection</button>
+                  <a href="profile.html#crewbidsAccessProfileCard" class="crewbids-profile-access-link">Manage access</a>
+                </div>
+              </div>
+              <div class="selection-readiness-block">
+                <div class="selection-readiness-heading">
+                  <div>
+                    <h4>CBP monitoring</h4>
+                    <p id="crewbidsMonitorStatus" class="crewbids-monitor-status">Waiting for a bid selection.</p>
+                  </div>
+                  <span id="crewbidsCbpMonitorBadge" class="crewbids-cbp-monitor-badge">Waiting</span>
+                </div>
+                <span id="crewbidsLastPollTime" class="crewbids-last-poll">Last checked: Waiting for bid selection</span>
+                <div class="crewbids-monitor-actions crewbids-monitor-status-actions">
+                  <button id="refreshCrewbidsMonitor" type="button" class="btn-secondary">Refresh evidence</button>
+                </div>
+              </div>
+            </section>
+
+            <section class="selection-workflow-card crewbids-monitor-access-card" aria-labelledby="selectionBidPlanningTitle">
+              <header class="selection-card-header">
+                <h3 id="selectionBidPlanningTitle">Bid planning</h3>
+              </header>
+              <div class="selection-intelligence-section">
+                <h4>Explore bids</h4>
+                <div class="crewbids-monitor-actions selection-intelligence-actions">
+                  <button id="openCrewbidsBidsPlacedSearch" type="button" class="btn-secondary">Search bids</button>
+                </div>
+              </div>
+              <div id="selectionMonthlyBidStrength" class="selection-monthly-strength" aria-live="polite">
+                <div class="selection-monthly-strength-heading">
+                  <h4>Monthly bidding strength</h4>
+                  <span id="selectionMonthlyBidStrengthBadge">Checking</span>
+                </div>
+                <strong id="selectionMonthlyBidStrengthValue">Checking this month's published Bid List…</strong>
+                <p id="selectionMonthlyBidStrengthDetail">Uses your current fleet and seat for the loaded bidding month.</p>
+              </div>
+              <div class="selection-intelligence-section">
+                <div class="selection-intelligence-heading">
+                  <h4>Saved-pilot checks</h4>
+                  <p>Run against the current official order</p>
+                </div>
+                <div class="selection-saved-pilot-grid">
+                  <div class="crewbids-bid-avoid-group">
+                    <div>
+                      <p class="crewbids-bid-avoid-label">Bid Avoid</p>
+                      <p id="crewbidsBidAvoidSummary" class="crewbids-bid-avoid-summary">No pilots saved.</p>
+                    </div>
+                    <div class="crewbids-bid-avoid-actions">
+                      <button id="checkCrewbidsBidAvoid" type="button" class="btn-secondary">Check</button>
+                      <a id="manageCrewbidsBidAvoid" href="profile.html#crewbidsBidAvoidProfileCard" class="crewbids-bid-avoid-save">Manage</a>
+                    </div>
+                    <p id="crewbidsBidAvoidCheckStatus" class="crewbids-bid-avoid-check-status" aria-live="polite"></p>
+                  </div>
+                  <div class="crewbids-bid-avoid-group crewbids-buddy-bid-group">
+                    <div>
+                      <p class="crewbids-bid-avoid-label">Buddy Bid</p>
+                      <p id="crewbidsBuddyBidSummary" class="crewbids-bid-avoid-summary">No pilots saved.</p>
+                    </div>
+                    <div class="crewbids-bid-avoid-actions">
+                      <button id="checkCrewbidsBuddyBid" type="button" class="btn-secondary">Check</button>
+                      <a id="manageCrewbidsBuddyBid" href="profile.html#crewbidsBuddyBidProfileCard" class="crewbids-bid-avoid-save">Manage</a>
+                    </div>
+                    <p id="crewbidsBuddyBidCheckStatus" class="crewbids-bid-avoid-check-status crewbids-buddy-bid-check-status" aria-live="polite"></p>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <section id="crewbidsSeniorNoBidders" class="crewbids-senior-no-bidders" aria-live="polite" hidden></section>
+
+          <section class="selection-workflow-card selection-official-review-card" aria-labelledby="selectionOfficialReviewTitle">
+            <header class="selection-card-header selection-official-review-header">
+              <div>
+                <p class="eyebrow">Review</p>
+                <h3 id="selectionOfficialReviewTitle">Official bid order</h3>
+                <p id="selectionOfficialReviewSummary">No choices selected.</p>
+              </div>
+              <button id="fetchCurrentCrewbidsBid" type="button" class="btn-secondary">Load previous submission</button>
+            </header>
+            <div class="selection-official-review-wrap">
+              <table class="selection-official-review-table">
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Line</th>
+                    <th>Type</th>
+                    <th>Credit</th>
+                    <th>Checks</th>
+                    <th>Official server</th>
+                  </tr>
+                </thead>
+                <tbody id="selectionOfficialReviewBody"></tbody>
+              </table>
+            </div>
+            <div id="selectionOutputStatus" class="selection-output-status"></div>
+            <details class="selection-text-export">
+              <summary>Text export</summary>
+              <textarea id="selectionOutput" class="selection-output" spellcheck="false" readonly aria-label="Read-only official bid order text export"></textarea>
+              <div class="selection-bid-actions-helper" aria-label="Bid order export actions">
+                <button id="copySelectionOutput" type="button" class="btn-secondary">Copy</button>
+                <button id="printSelectionOutput" type="button" class="btn-secondary">Print</button>
+              </div>
+            </details>
+          </section>
+
+          <section class="selection-workflow-card selection-submit-card" aria-labelledby="selectionSubmitTitle">
+            <div class="selection-submit-copy">
+              <p class="eyebrow">Submit</p>
+              <h3 id="selectionSubmitTitle">Send a new official bid</h3>
+              <div class="selection-submit-statuses" aria-label="Submission readiness">
+                <span id="selectionSubmitChoiceCount">0 choices</span>
+                <span id="selectionSubmitAccessStatus">Access checking</span>
+                <span id="selectionSubmitReviewStatus">Order not ready</span>
+              </div>
+              <p>The next step opens the final CrewBids confirmation.</p>
+            </div>
+            <div class="selection-submit-actions">
+              <button id="submitCrewbidsBidList" type="button" class="btn-primary">Review &amp; submit new bid</button>
+              <div id="crewbidsSubmitAccessHelper" class="crewbids-submit-access-helper" aria-live="polite" hidden>
+                <div>
+                  <strong>CrewBids access required</strong>
+                  <span>Add CrewBids access in Crew Profile before submitting a new bid.</span>
+                </div>
+                <a href="profile.html#crewbidsAccessProfileCard" class="btn-secondary">Manage access</a>
+              </div>
+              <button id="clearSelectionBidList" type="button" class="selection-clear-draft">Clear draft</button>
+            </div>
+          </section>
+        </section>
+      </section>
+
+    </main>
+
+    <div id="hoverPopup" class="hover-popup" hidden></div>
+
+    <div id="supportModal" class="support-modal" hidden>
+      <div class="support-modal-backdrop" data-close-modal></div>
+      <div class="support-modal-card" role="dialog" aria-modal="true" aria-labelledby="supportModalTitle">
+        <div class="support-modal-header">
+          <div>
+            <p class="eyebrow" id="supportModalEyebrow">Help</p>
+            <h2 id="supportModalTitle">FAQ</h2>
+          </div>
+          <button id="closeSupportModal" type="button" class="btn-secondary">Close</button>
+        </div>
+        <div id="supportModalBody" class="support-modal-body"></div>
+      </div>
+    </div>
+
+    <div id="confirmModal" class="confirm-modal" hidden>
+      <div class="confirm-modal-backdrop" data-cancel-confirm></div>
+      <div class="confirm-modal-card" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle" aria-describedby="confirmModalMessage">
+        <p class="eyebrow" id="confirmModalEyebrow">Confirm</p>
+        <h2 id="confirmModalTitle">Are you sure?</h2>
+        <p id="confirmModalMessage" class="confirm-modal-message">This action cannot be undone.</p>
+        <div class="confirm-modal-actions">
+          <button id="cancelConfirmAction" type="button" class="btn-secondary">Cancel</button>
+          <button id="confirmDestructiveAction" type="button" class="btn-primary">Yes</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="crewbidsSubmitModal" class="confirm-modal" hidden>
+      <div class="confirm-modal-backdrop" data-cancel-crewbids-submit></div>
+      <div class="confirm-modal-card crewbids-submit-modal-card" role="dialog" aria-modal="true" aria-labelledby="crewbidsSubmitModalTitle" aria-describedby="crewbidsSubmitModalMessage">
+        <p class="eyebrow">CrewBids Submit</p>
+        <h2 id="crewbidsSubmitModalTitle">Submit official CrewBids order?</h2>
+        <p id="crewbidsSubmitModalMessage" class="confirm-modal-message">CrewBidPro helps prepare and monitor bids, but you remain responsible for verifying bid-line accuracy, seniority and probability assumptions, official submission, and final bid outcome. CrewBidPro assumes no responsibility for inaccurate bid-line representations, calculations, submission errors, or award results.</p>
+        <div id="crewbidsSubmitPreview" class="crewbids-submit-preview"></div>
+        <fieldset id="crewbidsCqTrainingElection" class="crewbids-cq-election" hidden>
+          <legend>CQ training election required</legend>
+          <p>K4 requires you to choose when you will satisfy CQ training before this bid can be submitted.</p>
+          <div id="crewbidsCqTrainingElectionOptions" class="crewbids-cq-election-options"></div>
+        </fieldset>
+        <div class="confirm-modal-actions">
+          <button id="cancelCrewbidsSubmit" type="button" class="btn-secondary">Cancel</button>
+          <button id="confirmCrewbidsSubmit" type="button" class="btn-primary" disabled>Wait</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="crewbidsSubmittedBidsModal" class="confirm-modal" hidden>
+      <div class="confirm-modal-backdrop" data-cancel-submitted-bids></div>
+      <div class="confirm-modal-card crewbids-submitted-bids-modal-card" role="dialog" aria-modal="true" aria-labelledby="crewbidsSubmittedBidsTitle" aria-describedby="crewbidsSubmittedBidsMessage">
+        <p class="eyebrow">Submitted Bids</p>
+        <h2 id="crewbidsSubmittedBidsTitle">Load submitted CrewBids?</h2>
+        <p id="crewbidsSubmittedBidsMessage" class="confirm-modal-message">CrewBids returned the submitted order for this package. Choose whether to replace your current draft or keep local choices below the server order.</p>
+        <div id="crewbidsSubmittedBidsPreview" class="crewbids-submit-preview"></div>
+        <div class="confirm-modal-actions crewbids-submitted-bids-actions">
+          <button id="cancelSubmittedBidsImport" type="button" class="btn-secondary">Cancel</button>
+          <button id="preserveSubmittedBidsImport" type="button" class="btn-secondary">Load Server Bids + Keep Drafts</button>
+          <button id="clearSubmittedBidsImport" type="button" class="btn-secondary">Clear Drafts + Load Server Bids</button>
+        </div>
+      </div>
+    </div>
+
+    <template id="emptyTemplate">
+      <tr>
+        <td colspan="9" class="empty">No matches. Loosen a filter and try again.</td>
+      </tr>
+    </template>
+
+  <script src="app.js?v=20260830-new-user-full-access-welcome"></script>
+  <script src="scripts/app-update.js?v=20260824-linear-view-preferences"></script>
+  <script src="scripts/offline.js?v=20260824-linear-view-preferences"></script>
+  </body>
+</html>

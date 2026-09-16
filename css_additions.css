@@ -41,3 +41,27 @@ body.account-page {
   flex-direction: column;
   justify-content: center;
 }
+
+main {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* Sticky Header Implementation */
+table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--surface-color);
+}
+
+/* FAB Positioning Fix */
+.tab-jump {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}

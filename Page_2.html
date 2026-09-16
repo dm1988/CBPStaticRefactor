@@ -5,10 +5,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CrewBidPro Account</title>
-    <link rel="icon" href="branding/source-export/app-icon-light.svg" type="image/svg+xml">
+    <link rel="icon" href="assets/site-logo-dark.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="branding/web/apple-touch-icon.png">
     <link rel="manifest" href="manifest.webmanifest">
-    <link rel="stylesheet" href="styles.css?v=20260511-message-read-on-open">
+    <link rel="stylesheet" href="assets/styles.css">
     <script>
       (() => {
         const params = new URLSearchParams(window.location.search);
@@ -34,8 +34,8 @@
     <main class="account-shell" aria-labelledby="accountTitle">
       <section class="account-brand-panel" aria-label="CrewBidPro account">
         <div class="account-brand-lockup" aria-label="CrewBidPro">
-          <img class="account-icon" src="branding/source-export/app-icon-dark.svg" alt="" width="96" height="96">
-          <img class="account-wordmark" src="branding/source-export/wordmark-dark.svg" alt="CrewBidPro" width="276" height="77">
+          <img class="account-icon" src="assets/site-logo-dark.svg" alt="" width="96" height="96">
+          <img class="account-wordmark" src="assets/wordmark-dark.svg" alt="CrewBidPro" width="276" height="77">
         </div>
         <div class="account-brand-copy">
           <h1 id="accountTitle">Account Access</h1>
@@ -46,16 +46,13 @@
       <section class="account-card">
         <p class="eyebrow">Account</p>
         <h2>Login</h2>
-        <div class="app-update-strip account-app-update" aria-label="Application update information">
-          <span data-last-app-update>Last App Update: Checking...</span>
-        </div>
         <div class="account-session-row">
           <p class="account-note">Current session: <strong id="currentAccountEmail">Checking...</strong></p>
           <button id="signOutButton" class="btn-secondary account-link-button account-sign-out" type="button" hidden>Log Out</button>
         </div>
-        <div id="signedInAccountActions" class="account-signed-in-actions" hidden>
+        <div id="signedInAccountActions" class="account-signed-in-actions">
           <p class="account-copy">You are signed in. Continue to your bid planning workspace.</p>
-          <a class="btn-primary account-link-button" href="workspace.html?profileCheck=1">Continue To Workspace</a>
+          <a class="btn-primary account-link-button" href="Page_3.html">Continue To Workspace</a>
         </div>
         <form id="loginForm" class="account-form" autocomplete="on">
           <label>
