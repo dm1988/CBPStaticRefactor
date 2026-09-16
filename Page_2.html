@@ -1,0 +1,106 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CrewBidPro Account</title>
+    <link rel="icon" href="branding/source-export/app-icon-light.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="branding/web/apple-touch-icon.png">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="styles.css?v=20260511-message-read-on-open">
+    <script>
+      (() => {
+        const params = new URLSearchParams(window.location.search);
+        if (!params.has("resetShellCache") || params.has("shellCacheResetDone")) return;
+        const tasks = [];
+        if ("serviceWorker" in navigator) {
+          tasks.push(navigator.serviceWorker.getRegistrations()
+            .then((registrations) => Promise.all(registrations.map((registration) => registration.unregister()))));
+        }
+        if ("caches" in window) {
+          tasks.push(caches.keys().then((keys) => Promise.all(keys.map((key) => caches.delete(key)))));
+        }
+        Promise.allSettled(tasks).finally(() => {
+          params.delete("resetShellCache");
+          params.set("shellCacheResetDone", "1");
+          window.location.replace(`${window.location.pathname}?${params.toString()}`);
+        });
+      })();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  </head>
+  <body class="account-page">
+    <main class="account-shell" aria-labelledby="accountTitle">
+      <section class="account-brand-panel" aria-label="CrewBidPro account">
+        <div class="account-brand-lockup" aria-label="CrewBidPro">
+          <img class="account-icon" src="branding/source-export/app-icon-dark.svg" alt="" width="96" height="96">
+          <img class="account-wordmark" src="branding/source-export/wordmark-dark.svg" alt="CrewBidPro" width="276" height="77">
+        </div>
+        <div class="account-brand-copy">
+          <h1 id="accountTitle">Account Access</h1>
+          <p>Plan smarter. Bid confidently.</p>
+        </div>
+      </section>
+
+      <section class="account-card">
+        <p class="eyebrow">Account</p>
+        <h2>Login</h2>
+        <div class="app-update-strip account-app-update" aria-label="Application update information">
+          <span data-last-app-update>Last App Update: Checking...</span>
+        </div>
+        <div class="account-session-row">
+          <p class="account-note">Current session: <strong id="currentAccountEmail">Checking...</strong></p>
+          <button id="signOutButton" class="btn-secondary account-link-button account-sign-out" type="button" hidden>Log Out</button>
+        </div>
+        <div id="signedInAccountActions" class="account-signed-in-actions" hidden>
+          <p class="account-copy">You are signed in. Continue to your bid planning workspace.</p>
+          <a class="btn-primary account-link-button" href="workspace.html?profileCheck=1">Continue To Workspace</a>
+        </div>
+        <form id="loginForm" class="account-form" autocomplete="on">
+          <label>
+            Work Email
+            <input id="loginEmail" name="username" type="email" autocomplete="username" placeholder="CrewMember@company.com" required>
+          </label>
+          <label>
+            Password
+            <span class="password-field">
+              <input id="loginPassword" name="current-password" type="password" autocomplete="current-password" placeholder="Password" required>
+              <button class="password-toggle" type="button" data-password-toggle="loginPassword" aria-label="Show password" aria-pressed="false">Show</button>
+            </span>
+          </label>
+          <p id="accountStatus" class="account-status" aria-live="polite"></p>
+          <div class="account-actions account-login-actions">
+            <button class="btn-primary account-link-button" type="submit" data-auth-submit>Login</button>
+            <a class="btn-secondary account-link-button" href="create-account.html">Create An Account</a>
+            <a class="btn-secondary account-link-button" href="forgot-password.html">Reset Password</a>
+            <button id="accountSupportToggle" class="btn-secondary account-link-button account-corner-action account-support-action" type="button">Contact Developer</button>
+          </div>
+        </form>
+
+        <form id="accountSupportForm" class="account-form account-support-form" hidden>
+          <p class="account-copy">Having trouble getting in? Send your contact info and we will take a look.</p>
+          <label>
+            Name
+            <input id="accountSupportName" type="text" autocomplete="name" placeholder="Your name" required>
+          </label>
+          <label>
+            Email (best way to reach you)
+            <input id="accountSupportEmail" type="email" autocomplete="email" placeholder="pilot@example.com" required>
+          </label>
+          <label>
+            Airline
+            <input id="accountSupportAirline" type="text" autocomplete="organization" placeholder="Airline" required>
+          </label>
+          <div class="account-actions">
+            <button class="btn-primary account-link-button" type="submit" data-auth-submit>Submit</button>
+            <button id="accountSupportCancel" class="btn-secondary account-link-button" type="button">Cancel</button>
+          </div>
+        </form>
+      </section>
+    </main>
+    <script src="scripts/app-update.js?v=20260728-required-app-update"></script>
+    <script src="scripts/account-auth.js?v=20260718-ipad-layout-reliability"></script>
+    <script src="scripts/offline.js?v=20260624-shell-refresh"></script>
+  </body>
+</html>

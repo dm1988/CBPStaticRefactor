@@ -1,0 +1,140 @@
+# Usage
+This is a static refactor only, no dynamic data is provided in this scope.
+## Original code
+Original html code is provided in:
+Original_page_1.html
+Original_page_2.html
+Original_page_3.html
+## Refactored code
+Refactored code is in the following html files:
+Page_1.html
+Page_2.html
+Page_3.html
+
+# Refactor foundation setup
+1. Link CTA buttons for landing page to login page 2
+2. Link Continue to workspace CTA button to page 3
+
+# Landing page
+## Tasks
+### Establish strong multi tenancy
+Currently:
+The airline selection is a vertical stack where several airlines are marked as "Service not currently available."
+
+Problem: A user not belonging to a listed airline cannot use the app. If a user changes to a different airline, they would have to create a new login. Multiple log in setups adds complexity, takes time to update and manage, 
+
+Purpose: Eliminate the need for multiple databases, implimentations, and login but implimenting a multitenancy set up. Users would have 1 place to log in, but multi tennancy would be determined within a users preferance. 
+Having a multi tenancy setup complete eliminate the need for this first landing page. Users don't have to select their airline each time they use the app. 
+With multi tenancy, the landing page can now focus on marketing and purpose of the app
+
+Implimentation: back end and front end refactor not covered in this scope
+
+### Feat: Notify me when available
+Feature Suggestion: Implement a "Notify Me" flow for unavailable airlines to capture lead data for future expansion. Have user provide email for a mailing list
+
+### Adopt a Two-Column "Hero" Layout
+Currently:
+The current layout is a single-column stack (grid-template-columns: 649px) centered on the page. On desktop, this leaves a significant amount of wasted horizontal space.
+
+Improvement: Use a split-screen hero layout.
+Left Side: Value proposition and "How it works" (The "Bid Smarter" messaging).
+Right Side: The Airline Access/Sign-in card.
+Implementation: Change .landing-shell to grid-template-columns: 1fr 1fr for screens above 1024px.
+
+### Visual Hierarchy & Messaging
+The current brand-panel and access-card have almost equal visual weight.
+
+Improvement: Reduce the size of the "Airline Access" card container and increase the font-weight and scale of your primary headline ("Plan smarter. Bid confidently.").
+Visual Polish: The background-color: rgb(7, 26, 47) is very dark. Consider using a subtle gradient or a high-quality aviation-themed background image with an overlay to provide more professional context.
+
+### Suggested CSS Adjustments
+/* Example of a more responsive, multi-tenant grid */
+.landing-shell {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 48px;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Card improvements for airline selection */
+.landing-access-card .airline-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+# Login page
+## Tasks
+### Validate users and redirect to workspace
+Currently:
+Users with an active valid sessions are still displayed a login page with a CTA button `Continue to workspace`. A `sign out` button is displayed when a users main tentent is to log into the workspace
+
+Problem:
+Users are presented with an additional step and too much information. 
+
+Fix: Remove the `sign out` button. Valid users with a valid session should be redirected to the workspace. Only users not signed in or users without a verified email should only see this page.
+
+### Investigate unknown markup tags
+<cdbm-wrmnv> and <vanwbekn-i>
+
+These tags look like they might be injected by a browser extension, a security script (like bot detection), or they could be remnants of a specific framework. Currently, they have 0x0 dimensions, so they aren't visually impacting the layout, but if they are supposed to be functional (like a chat widget or a cookie banner), they are currently invisible.
+
+### Refactor Script tags within body
+Stacking and Scripts
+There are three <script> tags placed directly inside the body after the <main> content.
+
+Best Practice: While common, ensure these aren't blocking the initial render. Since they are at the end, they shouldn't, but using defer is usually preferred for modern performance standards.
+
+### Layout & Visual Hierarchy
+### Two-Column Switch
+The main.account-shell was using a single-column grid. Updated it to a responsive two-column layout (on larger screens) where the Brand Panel (dark background) sits alongside the Account Card (white background). This is a standard, modern pattern for login/account pages.
+Elevation: 
+Replace the heavy, dark shadow with a softer, multi-layered shadow to give the card a "floating" feel.
+Rounded Corners: Increased the border-radius from 8px to 16px for a friendlier, modern aesthetic.
+2. Refined Branding
+Gradients: Added a subtle linear gradient to the account-brand-panel to give it more depth than the flat dark blue.
+Page Background: Replaced the transparent/white background with a soft, tinted gradient background that complements the brand colors, making the central card pop.
+3. Content Cleanup
+Redundant Information: Hide the "Last App Update" and technical timestamp strings. These often clutter the UI for end-users and are better placed in a footer or a "system status" page.
+Grid Simplification: Removed the internal gap between the two panels within the main shell, allowing them to sit flush for a cohesive "card" look.
+4. Centering & Responsiveness
+Fixed the body's centering logic to ensure the card stays perfectly centered regardless of the viewport size, while using a 95% width constraint to prevent it from touching screen edges on mobile.
+
+# CBP Workspace
+## Tasks
+### High importance bug: Missing buttons on medium screens
+Currently:
+In a responsive medium screen, `Lines`, `Trips`, `Reserve`, and `Training` are not rendered to a user.
+Problem: Users cannot navigate critical core app functionality on smaller and medium screens.
+
+Fix: Establish tests asserting critical buttons shown on common format screens. Fix the html / css appropriately. 
+
+### UI/UX improvements 
+
+1. Header & Top Navigation
+* **Reduce Visual Noise:** Group secondary actions (*FAQ*, *Messages*, *Contact Developer*) into a single drop-down menu or place them in a subtle top bar to free up prominent header space.
+* **Consolidate App Meta:** Move the update timestamp (*Last App Update...*) into a footer or a small status tooltip near the account section rather than placing it directly beneath the main branding logo.
+
+2. Establish well defined viewports
+- Create 4 view ports with a left to right navigation bar establishing a workflow the user should typically use to bid. 
+  - Lines
+  - Trips
+  - Training
+  - 
+
+1. **Summary Metrics Bar**
+* **Improve Visual Hierarchy:** Standardize card heights and alignment for metrics (*Flying lines*, *Reserve lines*, *Trips*, *Line credit range*, etc.). Use lighter borders or subtle card backgrounds to make the key figures stand out more clearly without cluttering the screen.
+* **Add Action Indicators:** Make actionable metrics (like clicking into *Flying lines* or *Reserve lines*) visually distinct from static data like *Line credit range*.
+
+
+* **Filter & Schedule Controls**
+* **Establish a 2-Column Layout:** The main view is currently split unevenly between `SCHEDULE` / `FILTER` and the central page content. Align control panels cleanly using a consistent grid layout to eliminate awkward white space and vertical stacking.
+* **Foldable Accordions:** Collapsible panels for *Credit & Crew*, *Days & Duty*, *Airports*, and *Miscellaneous* should have consistent, clear visual boundaries and chevron indicators so users know what is open versus collapsed.
+* **Floating Floating Action Button (FAB):** The floating `JUMP` button overlaps filter fields on smaller display sizes. Anchor it to a fixed side pane or merge it into the top/bottom page navigation controls.
+
+
+* **Data Display & Line Cards**
+* **Scannability in Table/Linear View:** The *FLYING LINES* list contains dense blocks of metadata (*Credit gross*, *Carry-In value*, *Airports*, *Remarks*). Using structured columns, badge chips for status tags (e.g., `SPLIT LINE`, `UNLIKELY TO HOLD`), and clear color accents for carry-in vs. regular credit will significantly reduce cognitive load when scanning long lists.
+* **Sticky Headers:** Ensure the table headers and quick-filter bar remain fixed at the top when scrolling through long line lists.
