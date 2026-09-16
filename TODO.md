@@ -1,5 +1,7 @@
 # Usage
-This is a static refactor only, no dynamic data is provided in this scope.
+1. This is a static refactor only, no dynamic data is provided in this scope.
+2. Mark completed tasks with `Completed: `
+
 ## Original code
 Original html code is provided in:
 Original_page_1.html
@@ -11,11 +13,11 @@ Page_1.html
 Page_2.html
 Page_3.html
 
-# Refactor foundation setup
-1. Complete: Link CTA buttons for landing page to login page 2
-2. Complete: Link Continue to workspace CTA button to page 3
-3. Complete: Load in original styles.css
-4. Load in css_additions.css
+# [x] Completed: Refactor foundation setup
+1. Completed: Link CTA buttons for landing page to login page 2
+2. Completed: Link Continue to workspace CTA button to page 3
+3. Completed: Load in original styles.css
+4. Completed: Load in css_additions.css into all 3 pages
 
 # Landing page
 ## Tasks
@@ -90,19 +92,19 @@ There are three <script> tags placed directly inside the body after the <main> c
 Best Practice: While common, ensure these aren't blocking the initial render. Since they are at the end, they shouldn't, but using defer is usually preferred for modern performance standards.
 
 ### Layout & Visual Hierarchy
-### Two-Column Switch
+### Completed: Two-Column Switch
 The main.account-shell was using a single-column grid. Updated it to a responsive two-column layout (on larger screens) where the Brand Panel (dark background) sits alongside the Account Card (white background). This is a standard, modern pattern for login/account pages.
 Elevation: 
 Replace the heavy, dark shadow with a softer, multi-layered shadow to give the card a "floating" feel.
-Rounded Corners: Increased the border-radius from 8px to 16px for a friendlier, modern aesthetic.
+Completed: Rounded Corners: Increased the border-radius from 8px to 16px for a friendlier, modern aesthetic.
 2. Refined Branding
-Gradients: Added a subtle linear gradient to the account-brand-panel to give it more depth than the flat dark blue.
-Page Background: Replaced the transparent/white background with a soft, tinted gradient background that complements the brand colors, making the central card pop.
+Completed: Gradients: Added a subtle linear gradient to the account-brand-panel to give it more depth than the flat dark blue.
+Completed: Page Background: Replaced the transparent/white background with a soft, tinted gradient background that complements the brand colors, making the central card pop.
 3. Content Cleanup
-Redundant Information: Hide the "Last App Update" and technical timestamp strings. These often clutter the UI for end-users and are better placed in a footer or a "system status" page.
-Grid Simplification: Removed the internal gap between the two panels within the main shell, allowing them to sit flush for a cohesive "card" look.
+Completed: Redundant Information: Hide the "Last App Update" and technical timestamp strings. These often clutter the UI for end-users and are better placed in a footer or a "system status" page.
+Completed: Grid Simplification: Removed the internal gap between the two panels within the main shell, allowing them to sit flush for a cohesive "card" look.
 4. Centering & Responsiveness
-Fixed the body's centering logic to ensure the card stays perfectly centered regardless of the viewport size, while using a 95% width constraint to prevent it from touching screen edges on mobile.
+Completed: Fixed the body's centering logic to ensure the card stays perfectly centered regardless of the viewport size, while using a 95% width constraint to prevent it from touching screen edges on mobile.
 
 # CBP Workspace
 ## Tasks
@@ -131,7 +133,7 @@ Flex Alignment: The parent container for these elements has been updated to use 
 Vertical Centering: Both elements are now vertically aligned (align-items: center) to ensure a balanced look.
 Spacing: A consistent gap of 12px has been applied between the two items to prevent them from feeling cramped while maintaining a unified grouping.
 
-1. Establish well defined viewports
+1. Completed: Establish well defined viewports
 - Create 4 view ports with a left to right navigation bar establishing a workflow the user should typically use to bid. 
   - Lines
   - Trips
@@ -139,7 +141,7 @@ Spacing: A consistent gap of 12px has been applied between the two items to prev
   - Training
 
 1. **Summary Metrics Bar**
-* **Improve Visual Hierarchy:** Standardize card heights and alignment for metrics (*Flying lines*, *Reserve lines*, *Trips*, *Line credit range*, etc.). Use lighter borders or subtle card backgrounds to make the key figures stand out more clearly without cluttering the screen.
+* Completed: **Improve Visual Hierarchy:** Standardize card heights and alignment for metrics (*Flying lines*, *Reserve lines*, *Trips*, *Line credit range*, etc.). Use lighter borders or subtle card backgrounds to make the key figures stand out more clearly without cluttering the screen.
 * **Add Action Indicators:** Make actionable metrics (like clicking into *Flying lines* or *Reserve lines*) visually distinct from static data like *Line credit range*.
 
 
@@ -150,7 +152,7 @@ Spacing: A consistent gap of 12px has been applied between the two items to prev
 
 
 * **Data Display & Line Cards**
-* **Scannability in Table/Linear View:** The *FLYING LINES* list contains dense blocks of metadata (*Credit gross*, *Carry-In value*, *Airports*, *Remarks*). Using structured columns, badge chips for status tags (e.g., `SPLIT LINE`, `UNLIKELY TO HOLD`), and clear color accents for carry-in vs. regular credit will significantly reduce cognitive load when scanning long lists.
+* Completed: **Scannability in Table/Linear View:** The *FLYING LINES* list contains dense blocks of metadata (*Credit gross*, *Carry-In value*, *Airports*, *Remarks*). Using structured columns, badge chips for status tags (e.g., `SPLIT LINE`, `UNLIKELY TO HOLD`), and clear color accents for carry-in vs. regular credit will significantly reduce cognitive load when scanning long lists.
 * **Sticky Headers:** Ensure the table headers and quick-filter bar remain fixed at the top when scrolling through long line lists.
 
 ### Home button has no function
