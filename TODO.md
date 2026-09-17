@@ -21,7 +21,7 @@ Page_3.html
 
 # Landing page
 ## Tasks
-### Establish strong multi tenancy
+### Current focus: Establish strong multi tenancy
 Currently:
 The airline selection is a vertical stack where several airlines are marked as "Service not currently available."
 
@@ -31,7 +31,9 @@ Purpose: Eliminate the need for multiple databases, implimentations, and login b
 Having a multi tenancy setup complete eliminate the need for this first landing page. Users don't have to select their airline each time they use the app. 
 With multi tenancy, the landing page can now focus on marketing and purpose of the app
 
-Implimentation: back end and front end refactor not covered in this scope
+Implimentation: back end and front end refactor not covered in this scope.
+
+Completed: Static landing-page treatment for multitenancy. The page now presents one account login path instead of requiring users to choose an airline.
 
 ### Feat: Notify me when available
 Feature Suggestion: Implement a "Notify Me" flow for unavailable airlines to capture lead data for future expansion. Have user provide email for a mailing list

@@ -6,65 +6,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="CrewBidPro helps flight crews review bid packages, compare lines, and build a confident bid list.">
     <title>CrewBidPro</title>
-    <link rel="icon" href="assets/favicon-32.png" sizes="32x32">
-    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-    <link rel="stylesheet" href="assets/styles.css">
-    <link rel="stylesheet" href="css_additions.css">
+    <link rel="icon" href="./assets/favicon-32.png" sizes="32x32">
+    <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
+    <link rel="stylesheet" href="./assets/styles.css">
+    <link rel="stylesheet" href="./css_additions.css">
   </head>
-  <body>
+  <body class="landing-page">
     <main class="landing-shell" aria-labelledby="landingTitle">
       <section class="landing-brand-panel" aria-label="CrewBidPro">
-        <img class="landing-brand-lockup" src="assets/site-logo-dark.svg" alt="CrewBidPro" width="390" height="109">
+        <img class="landing-brand-lockup" src="./assets/site-logo-dark.svg" alt="CrewBidPro" width="390" height="109">
         <div class="landing-brand-copy">
           <p class="eyebrow">Bid Planning Tool for Flight Crews</p>
-          <h1 id="landingTitle">Bid Planning</h1>
-          <p class="brand-tagline">Plan smarter. Bid confidently.</p>
-          <p class="brand-description">Turn monthly bid packages into clear, ranked choices in a workspace built for professional crews.</p>
+          <h1 id="landingTitle">Plan smarter.<br>Bid confidently.</h1>
+          <p class="brand-description">Turn monthly bid packages into clear, ranked choices in one workspace built for professional crews.</p>
         </div>
+
+        <ol class="landing-steps" aria-label="How CrewBidPro works">
+          <li>
+            <span>1</span>
+            <div><strong>Sign in once</strong><small>Use one CrewBidPro account wherever you fly.</small></div>
+          </li>
+          <li>
+            <span>2</span>
+            <div><strong>Open your workspace</strong><small>Your airline and crew preferences travel with your profile.</small></div>
+          </li>
+          <li>
+            <span>3</span>
+            <div><strong>Build a better bid</strong><small>Compare schedules and rank the choices that fit your priorities.</small></div>
+          </li>
+        </ol>
       </section>
 
       <section class="landing-access-card" aria-labelledby="accessTitle">
         <div class="access-intro">
-          <p class="eyebrow">Airline Access</p>
-          <h2 id="accessTitle">Choose Your Airline</h2>
-          <p>Open the CrewBidPro service built for your crew.</p>
+          <p class="eyebrow">Secure Account Access</p>
+          <h2 id="accessTitle">One login.<br>Your workspace.</h2>
+          <p>Sign in to continue. CrewBidPro uses your account profile to open the right airline workspace automatically.</p>
         </div>
 
-        <div class="airline-list" aria-label="CrewBidPro airline services">
-          <a class="airline-entry is-active" href="Page_2.html" aria-label="Kalitta Air crew sign in">
-            <span class="airline-logo-panel">
-              <img src="assets/kalitta-air-logo.svg" alt="Kalitta Air" width="263" height="21">
-            </span>
-            <span class="airline-entry-action">Sign In</span>
-          </a>
-
-          <a class="airline-entry is-unavailable" href="airline-interest.html?airline=atlas-air" aria-label="Learn more about CrewBidPro for Atlas Air">
-            <span class="airline-name-panel">
-              <strong>Atlas Air</strong>
-              <small>Service not currently available</small>
-            </span>
-            <span class="airline-entry-action">Learn More</span>
-          </a>
-
-          <a class="airline-entry is-unavailable" href="airline-interest.html?airline=abx-air" aria-label="Learn more about CrewBidPro for ABX Air">
-            <span class="airline-name-panel">
-              <strong>ABX Air</strong>
-              <small>Service not currently available</small>
-            </span>
-            <span class="airline-entry-action">Learn More</span>
-          </a>
-
-          <a class="airline-entry is-unavailable" href="airline-interest.html?airline=national-airlines" aria-label="Learn more about CrewBidPro for National Airlines">
-            <span class="airline-name-panel">
-              <strong>National Airlines</strong>
-              <small>Service not currently available</small>
-            </span>
-            <span class="airline-entry-action">Learn More</span>
-          </a>
+        <div class="landing-access-action">
+          <a class="landing-sign-in" href="Page_2.html">Continue to sign in <span aria-hidden="true">&rarr;</span></a>
+          <p><span aria-hidden="true">&#10003;</span> Airline access is connected to your profile.</p>
         </div>
 
         <div class="access-footer">
-          <p>Need help with access or have an airline inquiry?</p>
+          <p>Need help with access or want to bring CrewBidPro to your airline?</p>
           <a class="contact-link" href="mailto:support@crewbidpro.com">Contact CrewBidPro</a>
         </div>
       </section>
