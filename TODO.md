@@ -1,3 +1,27 @@
+# [ ] CRITICAL: Eliminate DOM-based XSS vulnerabilities
+
+`scripts/app.js` builds HTML with `innerHTML` in multiple places using values from uploaded bid documents, API responses, browser storage, and application state. Several values are not HTML-escaped before insertion, including summary metrics, airport and region labels, bid/line names, element attributes, selection chips, and modal content. A malicious or corrupted upload or API response could therefore inject markup or JavaScript into the workspace.
+
+Required remediation:
+1. Replace dynamic `innerHTML` templates with `textContent`, `createElement`, and safe DOM property/attribute assignment wherever possible.
+2. Escape every remaining dynamic value according to its context; HTML-text escaping alone is not sufficient for URL, style, or attribute contexts.
+3. Treat all uploaded-document fields, API responses, local/session storage values, and IndexedDB records as untrusted input.
+4. Restrict `openSupportModal` and `showHoverPopup` to trusted templates or sanitize their HTML with a vetted sanitizer.
+5. Validate and normalize line names, airport codes, region/group labels, and other parsed fields before rendering.
+6. Add automated XSS regression tests using payloads in imported documents and mocked API responses, including attribute-breaking payloads.
+7. Deploy a restrictive Content Security Policy as defense in depth, without relying on CSP as the primary fix.
+
+Known high-risk locations include `renderSummary`, `renderAirportAvoidButtons`, `renderBidListPanel`, `renderSelection`, `openSupportModal`, `showHoverPopup`, and profile-avatar rendering in `scripts/app.js`.
+
+## Investigate schedule uploading payloads
+Investivate upload validation, rate limits, size limits
+
+How does the schedule import work?
+
+## normalizedFleet XSS
+
+## confirmDestructiveAction is interesting, investigate
+
 # Usage
 1. This is a static refactor only, no dynamic data is provided in this scope.
 2. Mark completed tasks with `Completed: `
