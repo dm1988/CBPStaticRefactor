@@ -141,23 +141,24 @@ Problem: Users cannot navigate critical core app functionality on smaller and me
 
 Fix: Establish tests asserting critical buttons shown on common format screens. Fix the html / css appropriately. 
 
-### UI/UX improvements 
+### Current focus: UI/UX improvements
 
 1. Header & Top Navigation
-* **Reduce Visual Noise:** Group secondary actions (*FAQ*, *Messages*, *Contact Developer*) into a single drop-down menu or place them in a subtle top bar to free up prominent header space.
+* Completed: **Reduce Visual Noise:**
+  Group secondary actions (*FAQ*, *Messages*, *Contact Developer*) into a single drop-down menu or place them in a subtle top bar to free up prominent header space.
 
-Profile Dropdown: The profile section (Avatar and Name) now acts as a trigger for a dropdown menu.
-Chevron Indicator: Add a small chevron (▾) next to your name to visually signal that it is an interactive menu.
-Button Relocation: The "Account" link has been removed from the main header area and placed inside the new profile dropdown for a cleaner layout. Sign out should be in this accordion.
+Completed: Profile Dropdown: The profile section (Avatar and Name) now acts as a trigger for a dropdown menu.
+Completed: Chevron Indicator: Added a small chevron (▾) next to the name to visually signal that it is an interactive menu.
+Completed: Button Relocation: The "Account" link and Sign Out action have been placed inside the profile dropdown for a cleaner layout.
 
-* **Consolidate App Meta:** Move the update timestamp (*Last App Update...*) into a footer or a small status tooltip near the account section rather than placing it directly beneath the main branding logo.
+* Completed: **Consolidate App Meta:** Moved the update timestamp (*Last App Update...*) into the profile/account menu rather than placing it directly beneath the main branding logo.
 * 
-Support Dropdown: A new interactive element labeled "ⓘ Support ▾" has been added to the header.
-Action Consolidation: The FAQ, Messages, and Contact Developer buttons have been moved from the main header into this new dropdown menu.
+Completed: Support Dropdown: A new interactive element labeled "ⓘ Support ▾" has been added to the header.
+Completed: Action Consolidation: The FAQ, Messages, and Contact Developer buttons have been moved from the main header into this new dropdown menu.
 
-Flex Alignment: The parent container for these elements has been updated to use display: flex with a row orientation.
-Vertical Centering: Both elements are now vertically aligned (align-items: center) to ensure a balanced look.
-Spacing: A consistent gap of 12px has been applied between the two items to prevent them from feeling cramped while maintaining a unified grouping.
+Completed: Flex Alignment: The parent container for these elements uses a flex row.
+Completed: Vertical Centering: Both elements are vertically aligned for a balanced header.
+Completed: Spacing: A consistent 12px gap separates the two items.
 
 1. Completed: Establish well defined viewports
 - Create 4 view ports with a left to right navigation bar establishing a workflow the user should typically use to bid. 
@@ -168,20 +169,21 @@ Spacing: A consistent gap of 12px has been applied between the two items to prev
 
 1. **Summary Metrics Bar**
 * Completed: **Improve Visual Hierarchy:** Standardize card heights and alignment for metrics (*Flying lines*, *Reserve lines*, *Trips*, *Line credit range*, etc.). Use lighter borders or subtle card backgrounds to make the key figures stand out more clearly without cluttering the screen.
-* **Add Action Indicators:** Make actionable metrics (like clicking into *Flying lines* or *Reserve lines*) visually distinct from static data like *Line credit range*.
+* Completed: **Add Action Indicators:** Actionable metrics (*Flying lines*, *Reserve lines*, and *Trips*) are visually distinct and navigate to their respective results.
 
 
 * **Filter & Schedule Controls**
-* **Establish a 2-Column Layout:** The main view is currently split unevenly between `SCHEDULE` / `FILTER` and the central page content. Align control panels cleanly using a consistent grid layout to eliminate awkward white space and vertical stacking.
-* **Foldable Accordions:** Collapsible panels for *Credit & Crew*, *Days & Duty*, *Airports*, and *Miscellaneous* should have consistent, clear visual boundaries and chevron indicators so users know what is open versus collapsed.
-* **Floating Floating Action Button (FAB):** The floating `JUMP` button overlaps filter fields on smaller display sizes. Anchor it to a fixed side pane or merge it into the top/bottom page navigation controls.
+* Completed: **Establish a 2-Column Layout:** The schedule and active filter controls use a responsive two-column grid when space permits.
+* Completed: **Foldable Accordions:** Filter groups have clear boundaries and individual collapse controls with state-aware chevrons.
+* Completed: **Floating Action Button (FAB):** The `JUMP` control remains anchored to the side pane, while navigation tabs stay in their normal header flow.
 
 
 * **Data Display & Line Cards**
 * Completed: **Scannability in Table/Linear View:** The *FLYING LINES* list contains dense blocks of metadata (*Credit gross*, *Carry-In value*, *Airports*, *Remarks*). Using structured columns, badge chips for status tags (e.g., `SPLIT LINE`, `UNLIKELY TO HOLD`), and clear color accents for carry-in vs. regular credit will significantly reduce cognitive load when scanning long lists.
-* **Sticky Headers:** Ensure the table headers and quick-filter bar remain fixed at the top when scrolling through long line lists.
+* Completed: **Sticky Table Headers:** Table headers use the workspace navigation offset and remain visible while scrolling long line lists.
+* **Sticky Quick Filters:** Keep the quick-filter bar visible without obscuring table headers on shorter viewports.
 
-### Home button has no function
+### Completed: Home button returns to Lines and scrolls to the workspace top
 
 ## UI/UX Optimization: CrewBidPro Workspace
 

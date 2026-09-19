@@ -7,9 +7,9 @@
     <meta name="theme-color" content="#07111d">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CrewBidPro</title>
-    <link rel="icon" href="branding/source-export/app-icon-light.svg" type="image/svg+xml">
+    <!-- <link rel="icon" href="branding/source-export/app-icon-light.svg" type="image/svg+xml"> -->
     <link rel="apple-touch-icon" href="branding/web/apple-touch-icon.png">
-    <link rel="manifest" href="manifest.webmanifest">
+    <!-- <link rel="manifest" href="manifest.webmanifest"> -->
     <style>
       html {
         background: #07111d;
@@ -123,28 +123,42 @@
         <div class="brand-copy">
           <p class="eyebrow">Kalitta workspace</p>
           <img class="brand-logo-image" src="assets/site-logo-dark.svg" alt="CrewBidPro" width="276" height="77">
-          <div class="app-update-strip" aria-label="Application update information">
-            <span data-last-app-update>Last App Update: Checking...</span>
-          </div>
         </div>
       </div>
       <div class="topbar-meta">
         <div class="topbar-actions">
-          <button id="faqButton" type="button" class="btn-secondary topbar-action">FAQ</button>
-          <button id="messagesButton" type="button" class="btn-secondary topbar-action message-button" hidden>Messages</button>
-          <button id="contactButton" type="button" class="btn-secondary topbar-action">Contact Developer</button>
-          <button id="devTierToggle" type="button" class="btn-secondary topbar-action dev-tier-toggle" hidden>Free Tier View</button>
-          <a id="workspaceAdminLink" href="admin" class="btn-secondary topbar-action topbar-action-link" hidden>Admin</a>
-          <a id="workspaceAccountLink" href="profile.html" class="btn-secondary topbar-action topbar-action-link">Account</a>
-          <button id="workspaceSignOutButton" type="button" class="btn-secondary topbar-action">Sign Out</button>
+          <details class="topbar-menu support-menu">
+            <summary class="btn-secondary topbar-action" aria-label="Open support menu">
+              <span aria-hidden="true">ⓘ</span>
+              <span>Support</span>
+              <span class="topbar-menu-chevron" aria-hidden="true"></span>
+            </summary>
+            <div class="topbar-menu-panel" role="group" aria-label="Support actions">
+              <button id="faqButton" type="button" class="topbar-menu-item">FAQ</button>
+              <button id="messagesButton" type="button" class="topbar-menu-item message-button" hidden>Messages</button>
+              <button id="contactButton" type="button" class="topbar-menu-item">Contact Developer</button>
+            </div>
+          </details>
         </div>
-        <button id="profileButton" type="button" class="profile-button" aria-label="Open profile">
-          <span id="profileAvatar" class="profile-avatar">RP</span>
-          <span class="profile-button-copy">
-            <strong id="profileName">Crew Profile</strong>
-            <span id="profileSeniorityBadge" class="profile-seniority-badge">Employee not confirmed</span>
-          </span>
-        </button>
+        <details class="topbar-menu profile-menu">
+          <summary id="profileButton" class="profile-button" aria-label="Open profile menu">
+            <span id="profileAvatar" class="profile-avatar">RP</span>
+            <span class="profile-button-copy">
+              <strong id="profileName">Crew Profile</strong>
+              <span id="profileSeniorityBadge" class="profile-seniority-badge">Employee not confirmed</span>
+            </span>
+            <span class="topbar-menu-chevron" aria-hidden="true"></span>
+          </summary>
+          <div class="topbar-menu-panel profile-menu-panel" role="group" aria-label="Account actions">
+            <a id="workspaceAccountLink" href="profile.html" class="topbar-menu-item topbar-menu-link">Account</a>
+            <a id="workspaceAdminLink" href="admin" class="topbar-menu-item topbar-menu-link" hidden>Admin</a>
+            <button id="devTierToggle" type="button" class="topbar-menu-item dev-tier-toggle" hidden>Free Tier View</button>
+            <button id="workspaceSignOutButton" type="button" class="topbar-menu-item topbar-menu-danger">Sign Out</button>
+            <div class="app-update-strip topbar-account-status" aria-label="Application update information">
+              <span data-last-app-update>Last App Update: Checking...</span>
+            </div>
+          </div>
+        </details>
       </div>
     </header>
 
@@ -1462,8 +1476,7 @@
       </tr>
     </template>
 
-  <script src="app.js?v=20260830-new-user-full-access-welcome"></script>
-  <script src="scripts/app-update.js?v=20260824-linear-view-preferences"></script>
-  <script src="scripts/offline.js?v=20260824-linear-view-preferences"></script>
+  <script src="./scripts/app.js"></script>
+  <script src="./scripts/app-update.js"></script>
   </body>
 </html>
