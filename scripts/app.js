@@ -540,89 +540,6 @@ const PREFERENCE_REGIONS = [
   "Australia",
 ];
 
-const FAQ_ITEMS = [
-  {
-    question: "What does the CrewBidPro Fatigue Score mean?",
-    answer: "The 0–100 score is a comparative prediction of how fatiguing one published flying line may be relative to another. Lower numbers indicate less predicted fatigue; higher numbers indicate more. The categories are Minimal (0–19), Low (20–39), Moderate (40–59), High (60–74), Very High (75–89), and Extreme (90–100). It is not a fitness-for-duty determination or an exact physiological measurement.",
-  },
-  {
-    question: "How is the Fatigue Score calculated?",
-    answer: "CrewBidPro follows the entire rotation as one continuous sequence using the published Trip Report times in Zulu. It estimates wake one hour before the published Show Time and the earliest practical hotel sleep opportunity two hours after Debriefing. It then models predicted sleep, restorative recovery, cumulative sleep pressure, continuous wakefulness, circadian timing, time-zone adaptation, duty duration and intensity, biological-night operations, ocean crossings, deadheads, crew complement, possible in-flight rest, and predicted fatigue during critical phases. The final score combines the peak fatigue-sensitive event, the worst sustained portion of the rotation, time spent at elevated fatigue, repeated high-fatigue duties, and the recovery state near the end of the line. Hybrid reserve periods remain schedule-unknown rather than being assigned invented duty times.",
-  },
-  {
-    question: "What is the Fatigue Score based on?",
-    answer: "The CrewBidPro Fatigue Score is an original comparative model informed by established sleep science and aviation fatigue research. Its foundations include the interaction between time awake and sleep, biological-time effects on alertness, cumulative sleep loss, circadian disruption, time-zone adaptation, recovery sleep, and the reduced restorative value of in-flight rest. CrewBidPro applies these principles to the published schedule using transparent assumptions about wake time, hotel readiness, predicted sleep, crew complement, bunk opportunity, deadheads, and recovery between duties. The methodology is informed by recognized Two-Process and Three-Process fatigue concepts, peer-reviewed pilot sleep studies, and guidance from NASA, the FAA, ICAO, and CASA. It does not reproduce a proprietary fatigue model, measure an individual pilot's physiology, determine fitness for duty, or replace an airline Fatigue Risk Management System.",
-  },
-  {
-    question: "What do the colors mean?",
-    answer: "Green-toned pills highlight standard flying or positively emphasized route items. Warm gold and tan tones usually mark reserve-related context. Red-toned pills call attention to split lines, deadheads, minimum-rest issues, or caution items. Gray or faded airport entries usually mean the crew is staying put without new movement that day.",
-  },
-  {
-    question: "Why are some airport pills slashed?",
-    answer: "A slash through an airport pill marks a deadhead segment instead of active operating flying. It helps the eye separate company movement from duty flying inside a line.",
-  },
-  {
-    question: "What counts as a long stay?",
-    answer: "A long stay is a planned rest or layover block above your long-stay threshold. The default is more than 24 hours, and custom thresholds can be adjusted in Crew Profile.",
-  },
-  {
-    question: "What does breakfast-friendly mean?",
-    answer: "Breakfast-friendly looks at the first show time of the first trip, converts that Zulu time to local departure time, and flags the line when duty starts between 6:30 a.m. local and your breakfast cut-off. The default cut-off is 9:00 a.m. local.",
-  },
-  {
-    question: "Do duty days include carry-in days?",
-    answer: "No. The Duty column shows the duty days published with the line itself. Carry-in days are shown separately because they are required workdays that still affect your month, but they are not counted inside the line's published duty-day total.",
-  },
-  {
-    question: "What does FLEX RSV mean?",
-    answer: "FLEX RSV marks a reserve block that may be handled separately from the flying portion of the line. Depending on Crew Scheduling and crew coordination, those reserve days may remain separate, be tied to the flying portion, or sometimes be dropped from the schedule. FLEX RSV does not automatically mean the line is a SPLIT LINE. If you are awarded a line with FLEX RSV, it is a good idea to call Crew Scheduling and confirm how the reserve portion will be handled.",
-  },
-  {
-    question: "Why can't we connect directly to Kalitta's CrewBids site?",
-    answer: "CrewBidPro can use saved CrewBid (Kalitta) credentials for hosted monitoring, submitted-bids checks, and user-confirmed new bids. Credentials are stored server-side in encrypted form, can be revoked from Crew Profile, and every new bid still requires an explicit confirmation step.\n\nCrewBidPro assists with bid preparation and monitoring, but each crewmember remains responsible for verifying official CrewBids results and bid outcomes.",
-  },
-];
-
-const CONTACT_PLACEHOLDER_HTML = `
-  <form id="contactDeveloperForm" class="contact-workflow">
-    <div class="contact-workflow-intro">
-      <p>Send a support request to the CrewBidPro developer.</p>
-      <p>Include the line, trip, fleet, bid month, and what looked wrong.</p>
-    </div>
-    <div class="contact-field-grid">
-      <label>
-        Request Type
-        <select id="contactRequestType">
-          <option value="Parser issue">Parser issue</option>
-          <option value="Import problem">Import problem</option>
-          <option value="Display problem">Display problem</option>
-          <option value="Account Setup">Account Setup</option>
-          <option value="Account question">Account question</option>
-          <option value="Request a feature">Request a feature</option>
-          <option value="Other">Other</option>
-        </select>
-      </label>
-      <label>
-        Reply Contact
-        <input id="contactReplyTo" type="text" autocomplete="email" placeholder="Name, email, or phone">
-      </label>
-    </div>
-    <label>
-      What Happened
-      <textarea id="contactMessage" class="contact-message" rows="6" placeholder="Line/trip, fleet, bid month, what you clicked, and what looked wrong"></textarea>
-    </label>
-    <label>
-      Support Summary
-      <textarea id="contactSummary" class="report-payload contact-summary" rows="12" spellcheck="false" readonly></textarea>
-    </label>
-    <div class="report-actions">
-      <button id="submitContactRequest" type="submit" class="btn-primary">Submit Request</button>
-      <button id="copyContactSummary" type="button" class="btn-secondary">Copy Summary</button>
-      <span id="copyContactStatus" class="report-copy-status" aria-live="polite"></span>
-    </div>
-  </form>
-`;
-
 const $ = (id) => document.getElementById(id);
 
 let pendingConfirmResolve = null;
@@ -6944,46 +6861,27 @@ const renderReserveSchedulePopup = (reserve, allowedStatuses = []) => {
 };
 
 function renderSummary() {
-  if (!state.data.lines.length && !state.data.trips.length && !state.data.reserves.length) {
-    $("summaryGrid").replaceChildren();
-    return;
-  }
+  const hasData = Boolean(state.data.lines.length || state.data.trips.length || state.data.reserves.length);
   const { summary } = state.data;
   const reserveLineCount = getReserveOnlyLines().length;
-  const metrics = [
-    { label: "Flying lines", value: summary.lineCount, tab: "lines" },
-    { label: "Reserve lines", value: reserveLineCount, tab: "reserves" },
-    { label: "Trips", value: summary.tripCount, tab: "trips" },
-    { label: "Line credit range", value: `${summary.lineCredit?.minLabel || ""} - ${summary.lineCredit?.maxLabel || ""}` },
-    { label: "Top airport", value: summary.topAirports?.[0]?.[0] || "" },
-    { label: "Top leg", value: summary.topLegs?.[0]?.[0] || "" },
-  ];
-
-  const summaryGrid = $("summaryGrid");
-  const fragment = document.createDocumentFragment();
-  metrics.forEach(({ label, value, tab }) => {
-    const metric = document.createElement(tab ? "button" : "article");
-    metric.className = `metric${tab ? " metric-action" : ""}`;
-    if (tab) {
-      metric.type = "button";
-      metric.dataset.summaryTab = tab;
-      metric.setAttribute("aria-label", `Open ${label}`);
-    }
-    const labelElement = document.createElement("div");
-    labelElement.className = "label";
-    labelElement.textContent = label;
-    const valueElement = document.createElement("div");
-    valueElement.className = "value";
-    valueElement.textContent = String(value ?? "");
-    metric.append(labelElement, valueElement);
-    fragment.append(metric);
+  const values = {
+    summaryFlyingLines: hasData ? summary.lineCount : "—",
+    summaryReserveLines: hasData ? reserveLineCount : "—",
+    summaryTrips: hasData ? summary.tripCount : "—",
+    summaryLineCreditRange: hasData ? `${summary.lineCredit?.minLabel || ""} - ${summary.lineCredit?.maxLabel || ""}` : "—",
+    summaryTopAirport: hasData ? summary.topAirports?.[0]?.[0] || "—" : "—",
+    summaryTopLeg: hasData ? summary.topLegs?.[0]?.[0] || "—" : "—",
+  };
+  Object.entries(values).forEach(([id, value]) => {
+    const output = $(id);
+    if (output) output.textContent = String(value ?? "—");
   });
-  summaryGrid.replaceChildren(fragment);
-  summaryGrid.querySelectorAll("[data-summary-tab]").forEach((metric) => {
-    metric.addEventListener("click", () => {
+
+  $("summaryGrid")?.querySelectorAll("[data-summary-tab]").forEach((metric) => {
+    metric.onclick = () => {
       setActiveTab(metric.dataset.summaryTab, { userInitiated: true });
       requestAnimationFrame(() => scrollElementBelowTabs(getResultAnchor()));
-    });
+    };
   });
 }
 
@@ -15198,7 +15096,7 @@ async function exitEmployeeIdentityModal() {
 function contactDeveloperFromEmployeeIdentity() {
   const modal = $("employeeIdentityModal");
   if (modal) modal.hidden = true;
-  openSupportModal("Contact Developer", "Support", CONTACT_PLACEHOLDER_HTML);
+  openSupportTemplate("contactDeveloperTemplate", "Contact Developer", "Support");
   setupContactWorkflow({ requestType: "Account Setup" });
 }
 
@@ -15550,16 +15448,26 @@ function setupProfileAssignmentNavigationGuard() {
   });
 }
 
-function openSupportModal(title, eyebrow, bodyHtml) {
+function openSupportModal(title, eyebrow, bodyContent) {
   const modal = $("supportModal");
   if (!modal) return;
   modal.classList.remove("is-long-stay-threshold-modal");
   $("supportModalTitle").textContent = title;
   $("supportModalEyebrow").textContent = eyebrow;
-  $("supportModalBody").innerHTML = bodyHtml;
+  const body = $("supportModalBody");
+  body.replaceChildren();
+  if (bodyContent instanceof Node) body.append(bodyContent);
+  else body.innerHTML = String(bodyContent || "");
   setSupportModalHeaderButton();
   modal.dataset.modalTitle = title;
   modal.hidden = false;
+}
+
+function openSupportTemplate(templateId, title, eyebrow) {
+  const template = $(templateId);
+  if (!(template instanceof HTMLTemplateElement)) return false;
+  openSupportModal(title, eyebrow, template.content.cloneNode(true));
+  return true;
 }
 
 function setSupportModalHeaderButton(label = "Close", action = null) {
@@ -16618,20 +16526,7 @@ function setupSupportTools() {
   if (state.supportToolsInitialized) return;
   state.supportToolsInitialized = true;
   $("faqButton")?.addEventListener("click", () => {
-    const gettingStartedHtml = isProfilePage() ? "" : `
-      <article class="faq-item faq-getting-started">
-        <h3>Getting started</h3>
-        <p>Open the welcome guide again for the basic CrewBidPro workflow.</p>
-        <button id="showWelcomeGuide" type="button" class="btn-primary">Show Welcome Guide</button>
-      </article>
-    `;
-    const bodyHtml = `${gettingStartedHtml}${FAQ_ITEMS.map((item) => `
-      <article class="faq-item">
-        <h3>${escapeHtml(item.question)}</h3>
-        <p>${escapeHtml(item.answer)}</p>
-      </article>
-    `).join("")}`;
-    openSupportModal("FAQ", "Help", bodyHtml);
+    openSupportTemplate("faqTemplate", "FAQ", "Help");
     $("showWelcomeGuide")?.addEventListener("click", () => {
       closeSupportModal();
       openNewUserSplash({ force: true });
@@ -16639,7 +16534,7 @@ function setupSupportTools() {
   });
 
   $("contactButton")?.addEventListener("click", () => {
-    openSupportModal("Contact Developer", "Support", CONTACT_PLACEHOLDER_HTML);
+    openSupportTemplate("contactDeveloperTemplate", "Contact Developer", "Support");
     setupContactWorkflow();
   });
 

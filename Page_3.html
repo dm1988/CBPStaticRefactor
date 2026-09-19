@@ -353,7 +353,32 @@
         </div>
         </div>
       </section>
-      <section class="summary-grid" id="summaryGrid"></section>
+      <section class="summary-grid" id="summaryGrid" aria-label="Bid package summary">
+        <button type="button" class="metric metric-action" data-summary-tab="lines" aria-label="Open Flying lines">
+          <span class="label">Flying lines</span>
+          <span id="summaryFlyingLines" class="value">—</span>
+        </button>
+        <button type="button" class="metric metric-action" data-summary-tab="reserves" aria-label="Open Reserve lines">
+          <span class="label">Reserve lines</span>
+          <span id="summaryReserveLines" class="value">—</span>
+        </button>
+        <button type="button" class="metric metric-action" data-summary-tab="trips" aria-label="Open Trips">
+          <span class="label">Trips</span>
+          <span id="summaryTrips" class="value">—</span>
+        </button>
+        <article class="metric">
+          <span class="label">Line credit range</span>
+          <span id="summaryLineCreditRange" class="value">—</span>
+        </article>
+        <article class="metric">
+          <span class="label">Top airport</span>
+          <span id="summaryTopAirport" class="value">—</span>
+        </article>
+        <article class="metric">
+          <span class="label">Top leg</span>
+          <span id="summaryTopLeg" class="value">—</span>
+        </article>
+      </section>
 
       <section id="workspaceControlsDeck" class="workspace-controls-deck" aria-label="Schedule and current filters">
         <section class="calendar-panel accordion-section" data-feature="avoidCalendar">
@@ -1493,6 +1518,94 @@
         </div>
       </div>
     </div>
+
+    <template id="faqTemplate">
+      <article class="faq-item faq-getting-started">
+        <h3>Getting started</h3>
+        <p>Open the welcome guide again for the basic CrewBidPro workflow.</p>
+        <button id="showWelcomeGuide" type="button" class="btn-primary">Show Welcome Guide</button>
+      </article>
+      <article class="faq-item">
+        <h3>What does the CrewBidPro Fatigue Score mean?</h3>
+        <p>The 0–100 score compares the predicted fatigue of published flying lines. Lower numbers indicate less predicted fatigue and higher numbers indicate more. It is not a fitness-for-duty determination or an exact physiological measurement.</p>
+      </article>
+      <article class="faq-item">
+        <h3>How is the Fatigue Score calculated?</h3>
+        <p>CrewBidPro follows each rotation as a continuous sequence using published times. It considers predicted sleep, recovery, cumulative sleep pressure, wakefulness, circadian timing, time-zone adaptation, duty duration, biological-night operations, ocean crossings, deadheads, crew complement, and possible in-flight rest.</p>
+      </article>
+      <article class="faq-item">
+        <h3>What is the Fatigue Score based on?</h3>
+        <p>The comparative model is informed by established sleep science, aviation fatigue research, recognized fatigue-model concepts, peer-reviewed pilot sleep studies, and guidance from NASA, the FAA, ICAO, and CASA.</p>
+      </article>
+      <article class="faq-item">
+        <h3>What do the colors mean?</h3>
+        <p>Green tones highlight standard flying or emphasized route items. Gold and tan mark reserve context. Red calls attention to split lines, deadheads, minimum-rest issues, or cautions. Gray airports usually mean the crew stays in place.</p>
+      </article>
+      <article class="faq-item">
+        <h3>Why are some airport pills slashed?</h3>
+        <p>A slash marks a deadhead segment rather than active operating flying.</p>
+      </article>
+      <article class="faq-item">
+        <h3>What counts as a long stay?</h3>
+        <p>A long stay is a planned rest or layover above your configured threshold. The default is more than 24 hours.</p>
+      </article>
+      <article class="faq-item">
+        <h3>What does breakfast-friendly mean?</h3>
+        <p>Breakfast-friendly converts the first trip’s show time to local departure time and identifies lines beginning between 6:30 a.m. and your configured cut-off.</p>
+      </article>
+      <article class="faq-item">
+        <h3>Do duty days include carry-in days?</h3>
+        <p>No. Duty days reflect the published line. Carry-in days are displayed separately.</p>
+      </article>
+      <article class="faq-item">
+        <h3>What does FLEX RSV mean?</h3>
+        <p>FLEX RSV marks a reserve block that may be handled separately from the flying portion. Confirm its treatment with Crew Scheduling if you are awarded one.</p>
+      </article>
+      <article class="faq-item">
+        <h3>Why can’t we connect directly to Kalitta’s CrewBids site?</h3>
+        <p>CrewBidPro can use saved credentials for hosted monitoring and user-confirmed bids, but every new bid still requires explicit confirmation. Crewmembers remain responsible for verifying official results.</p>
+      </article>
+    </template>
+
+    <template id="contactDeveloperTemplate">
+      <form id="contactDeveloperForm" class="contact-workflow">
+        <div class="contact-workflow-intro">
+          <p>Send a support request to the CrewBidPro developer.</p>
+          <p>Include the line, trip, fleet, bid month, and what looked wrong.</p>
+        </div>
+        <div class="contact-field-grid">
+          <label>
+            Request Type
+            <select id="contactRequestType">
+              <option value="Parser issue">Parser issue</option>
+              <option value="Import problem">Import problem</option>
+              <option value="Display problem">Display problem</option>
+              <option value="Account Setup">Account Setup</option>
+              <option value="Account question">Account question</option>
+              <option value="Request a feature">Request a feature</option>
+              <option value="Other">Other</option>
+            </select>
+          </label>
+          <label>
+            Reply Contact
+            <input id="contactReplyTo" type="text" autocomplete="email" placeholder="Name, email, or phone">
+          </label>
+        </div>
+        <label>
+          What Happened
+          <textarea id="contactMessage" class="contact-message" rows="6" placeholder="Line/trip, fleet, bid month, what you clicked, and what looked wrong"></textarea>
+        </label>
+        <label>
+          Support Summary
+          <textarea id="contactSummary" class="report-payload contact-summary" rows="12" spellcheck="false" readonly></textarea>
+        </label>
+        <div class="report-actions">
+          <button id="submitContactRequest" type="submit" class="btn-primary">Submit Request</button>
+          <button id="copyContactSummary" type="button" class="btn-secondary">Copy Summary</button>
+          <span id="copyContactStatus" class="report-copy-status" aria-live="polite"></span>
+        </div>
+      </form>
+    </template>
 
     <template id="emptyTemplate">
       <tr>
