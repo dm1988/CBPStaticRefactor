@@ -44,7 +44,7 @@ empty-state.html
 1. Completed: Link CTA buttons for landing page to login page 2
 2. Completed: Link Continue to workspace CTA button to page 3
 3. Completed: Load in original styles.css
-4. Completed: Load in css_additions.css into all 3 pages
+4. Completed: Load `assets/styles.css` and `css_additions.css` into all static pages
 
 # Landing page
 ## Tasks

@@ -46,8 +46,10 @@ assert(/tab-group tab-group-primary["'][^>]+role=["']tablist["']/.test(page3),
 
 assert(/\.tabs\s+\.tab-group-primary\s*\{[\s\S]*?grid-template-columns:\s*repeat\(6,/m.test(css),
   "Primary navigation must include six desktop columns");
-assert(/@media\s*\(max-width:\s*1100px\)[\s\S]*?\.tabs\s+\.tab-group-primary[\s\S]*?repeat\(3,/m.test(css),
-  "Medium viewport navigation regression rule is missing");
+assert(/@media\s*\(max-width:\s*1100px\)[\s\S]*?\.tabs\s+\.tab-group-primary[\s\S]*?repeat\(6,/m.test(css),
+  "Large and tablet viewport navigation must retain one six-tab row");
+assert(/@media\s*\(max-width:\s*767px\)[\s\S]*?\.tabs\s+\.tab-group-primary[\s\S]*?repeat\(3,/m.test(css),
+  "Small viewport navigation must use three columns");
 assert(/@media\s*\(max-width:\s*520px\)[\s\S]*?\.tabs\s+\.tab-group-primary[\s\S]*?repeat\(2,/m.test(css),
   "Phone navigation must use two readable columns");
 assert(!page3.includes("tab-group-jumps"), "Bid Selection must not remain inside the mobile-hidden jump group");
