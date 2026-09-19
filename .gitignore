@@ -1,0 +1,5 @@
+*.js
+scripts/*.js
+scripts/account-auth.js
+scripts/app-update.js
+scripts/app.js
