@@ -271,6 +271,55 @@ body.landing-page {
   }
 }
 
+/* Minimal primary tabs: use an underline instead of boxed buttons. */
+.tabs .tab-group-primary .tab {
+  appearance: none;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
+  box-shadow: none;
+  cursor: pointer;
+  font-weight: 750;
+  transform: none;
+}
+
+.tabs .tab-group-primary .tab:hover {
+  border-bottom-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  background: transparent;
+  color: var(--ink);
+  transform: none;
+}
+
+.tabs .tab-group-primary .tab.is-active,
+.tabs .tab-group-primary .tab.is-active:hover,
+.tabs .tab-group-primary .tab.is-active:focus,
+.tabs .tab-group-primary .tab.is-active:active {
+  border-color: transparent;
+  border-bottom-color: var(--accent);
+  background: transparent;
+  color: var(--accent-strong);
+  box-shadow: none;
+  font-weight: 900;
+}
+
+.tabs .tab-group-primary .tab:focus-visible {
+  border-bottom-color: var(--accent);
+  outline: 2px solid color-mix(in srgb, var(--focus) 48%, transparent);
+  outline-offset: 2px;
+}
+
+.tabs .tab-group-jumps {
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
 /* Workspace tables already use a tabs-aware sticky offset in assets/styles.css. */
 
 /* Compact workspace header menus */
@@ -590,5 +639,102 @@ body.theme-dark .topbar-menu-panel {
     right: max(12px, env(safe-area-inset-right));
     bottom: calc(max(12px, env(safe-area-inset-bottom)) + 66px);
     width: min(200px, calc(100vw - 24px));
+  }
+}
+
+/* Primary workflow navigation: Home → package → Import → bid views. */
+.tabs {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  grid-template-areas:
+    "workflow views"
+    "secondary secondary";
+  gap: 8px 12px;
+  align-items: center;
+}
+
+.tabs > .tab-divider {
+  display: none;
+}
+
+.tabs .tab-group-home {
+  grid-area: workflow;
+  display: grid;
+  grid-template-columns: auto minmax(180px, 1fr) auto;
+  gap: 7px;
+  width: 100%;
+  min-width: 0;
+}
+
+.tabs .tab-group-primary {
+  grid-area: views;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(76px, auto));
+  gap: 7px;
+  justify-self: end;
+  min-width: 0;
+}
+
+.tabs .tab-group-jumps {
+  grid-area: secondary;
+  width: 100%;
+  min-width: 0;
+}
+
+.tabs .current-dataset-banner {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+}
+
+.tabs .current-dataset-banner p {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tabs .tab-group-home > .tab,
+.tabs .tab-group-primary > .tab {
+  min-height: 44px;
+}
+
+@media (max-width: 1100px) {
+  .tabs {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "workflow"
+      "views"
+      "secondary";
+  }
+
+  .tabs .tab-group-primary {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    justify-self: stretch;
+    width: 100%;
+  }
+
+  .tabs .tab-group-primary > .tab {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .tabs .tab-group-home {
+    grid-template-columns: 68px minmax(0, 1fr) 68px;
+  }
+
+  .tabs .tab-group-home > .tab:is([data-view-target="home"], [data-tab="import"]) {
+    width: 68px;
+    min-width: 0;
+    padding-inline: 5px;
+    font-size: 13px;
+  }
+
+  .tabs .tab-group-primary > .tab {
+    padding-inline: 4px;
+    font-size: clamp(12px, 3.6vw, 15px);
   }
 }
