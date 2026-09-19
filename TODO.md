@@ -197,14 +197,14 @@ The following architectural and stylistic issues were identified across the main
 | :--- | :--- |
 | **Header** | `topbar-actions` contains 7+ disparate buttons (FAQ, Messages, Contact Developer, Admin, etc.), causing clutter. |
 | **App Meta** | `.app-update-strip` is nested inside the brand lockup, competing with the primary logo. |
-| **Metrics Bar** | `#summaryGrid` uses a basic block display; lacks visual distinction between clickable and static metrics. |
+| Completed: **Metrics Bar** | `#summaryGrid` uses equal-height grid rows; actionable metrics are buttons with pointer, hover, and focus states while static metrics remain neutral. |
 | **Layout** | Main content sections (`#workspaceControlsDeck`, `#linesPanel`) use `display: block`, causing vertical stacking rather than a 2-column grid. |
-| **Navigation** | The "JUMP" FAB (`.tab-jump`) uses `position: static`, preventing it from floating or anchoring to a specific pane. |
+| Completed: **Navigation** | The actual JUMP control now uses the dedicated `.workspace-jump-fab` selector and is anchored to the lower-right safe area. Header `.tab-jump` controls remain in the sticky navigation flow. |
 | **Table** | `thead` uses `position: static`, causing headers to disappear during scrolling. |
 
 **Actionable Findings**
 *   **Action Consolidation:** Group secondary actions (FAQ, Messages, Contact Developer) into a single `<details>` dropdown or a "More" menu to reclaim header space.
-*   **Visual Hierarchy:** Apply `display: grid` to `#summaryGrid` to standardize metric card heights. Use `cursor: pointer` and subtle hover states to indicate actionable metrics like "Flying lines" versus static data.
+*   Completed: **Visual Hierarchy:** `#summaryGrid` uses a grid with standardized card heights. Actionable metrics such as "Flying lines" use pointer, hover, and focus states, while static metrics remain visually neutral.
 *   **Layout Efficiency:** Transition the main container to a grid layout to support the requested 2-column view for filters and content.
 *   **Accordions:** Standardize `.filter-cluster` headers with chevron indicators (`::after` elements) to clarify expansion states.
 

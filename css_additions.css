@@ -435,7 +435,19 @@ body.theme-dark .topbar-menu-panel {
 }
 
 /* Actionable summary metrics */
-.metric-action {
+#summaryGrid {
+  display: grid;
+  grid-auto-rows: minmax(64px, 1fr);
+  align-items: stretch;
+}
+
+#summaryGrid .metric {
+  box-sizing: border-box;
+  height: 100%;
+  cursor: default;
+}
+
+#summaryGrid .metric-action {
   appearance: none;
   width: 100%;
   color: var(--ink);
@@ -445,13 +457,13 @@ body.theme-dark .topbar-menu-panel {
   transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
 }
 
-.metric-action:hover {
+#summaryGrid .metric-action:hover {
   border-color: color-mix(in srgb, var(--accent) 62%, var(--line));
   box-shadow: inset 0 -3px 0 var(--accent), 0 5px 14px rgba(7, 17, 29, 0.1);
   transform: translateY(-1px);
 }
 
-.metric-action:focus-visible {
+#summaryGrid .metric-action:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--focus) 48%, transparent);
   outline-offset: 2px;
 }
@@ -528,5 +540,55 @@ body.theme-dark .topbar-menu-panel {
 @media (min-width: 561px) {
   .filter-cluster.is-collapsed {
     grid-template-columns: minmax(190px, 1fr);
+  }
+}
+
+/* The header's .tab-jump controls stay in flow; this is the actual JUMP FAB. */
+.workspace-jump-fab.lines-panel-navigation-toggle {
+  position: fixed;
+  top: auto;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(18px, env(safe-area-inset-bottom));
+  left: auto;
+  width: 64px;
+  height: 64px;
+  padding: 8px;
+  border: 1px solid color-mix(in srgb, var(--accent) 70%, var(--line));
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow: 0 10px 28px rgba(7, 17, 29, 0.3);
+}
+
+.workspace-jump-fab.lines-panel-navigation-toggle:hover,
+.workspace-jump-fab.lines-panel-navigation-toggle:focus-visible,
+.lines-panel-navigation.is-open .workspace-jump-fab.lines-panel-navigation-toggle {
+  border-color: var(--accent-strong);
+  background: var(--accent-strong);
+  box-shadow: 0 12px 32px rgba(7, 17, 29, 0.38);
+  transform: translateY(-2px);
+}
+
+.lines-panel-navigation-menu {
+  top: auto;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(max(18px, env(safe-area-inset-bottom)) + 74px);
+  left: auto;
+  width: min(210px, calc(100vw - 32px));
+  transform: none;
+}
+
+@media (max-width: 767px) {
+  .workspace-jump-fab.lines-panel-navigation-toggle {
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(12px, env(safe-area-inset-bottom));
+    width: 56px;
+    height: 56px;
+  }
+
+  .lines-panel-navigation-menu {
+    right: max(12px, env(safe-area-inset-right));
+    bottom: calc(max(12px, env(safe-area-inset-bottom)) + 66px);
+    width: min(200px, calc(100vw - 24px));
   }
 }
