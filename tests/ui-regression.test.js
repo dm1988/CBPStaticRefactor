@@ -66,6 +66,8 @@ assert(/supportedTabs\.includes\(requestedTab\)/.test(app) && app.includes('"sub
   "Workspace deep links and navigation state must support Submit Bids");
 
 assert(!/<nav\b/i.test(emptyState), "Empty state must not render workspace navigation");
+assert(/<header[^>]+class=["']topbar empty-state-topbar["']/.test(emptyState),
+  "Empty state must retain the top navigation header");
 assert(/href=["']Page_3\.html\?tab=import["']/.test(emptyState),
   "Empty-state CTA must open the workspace Import panel");
 assert(/>Upload bid package<\/a>/i.test(emptyState), "Empty-state upload CTA is missing");
@@ -112,6 +114,12 @@ const datasetIndex = page3.indexOf("dataset-status-bar");
 const primaryNavIndex = page3.indexOf('class="tabs"');
 assert(datasetIndex >= 0 && datasetIndex < primaryNavIndex,
   "Dataset status must appear above the primary navigation");
+assert(page3.includes('<p id="currentDatasetBanner">Viewing October 2026 - 777 Bids</p>'),
+  "Dataset banner must show the October 2026 777 bid status");
+assert(!page3.includes("dataset-import-action") && !page3.includes("importAttentionHint"),
+  "Dataset banner must not include Import controls or hint text");
+assert(/function getCurrentDatasetBanner\([^)]*\)\s*\{\s*return ["']Viewing October 2026 - 777 Bids["'];\s*\}/.test(app),
+  "Dataset banner renderer must preserve the requested status after hydration");
 
 assert(/@media\s*\(min-width:\s*768px\)\s*and\s*\(min-height:\s*700px\)/.test(css),
   "Roomy-viewport sticky quick-filter guard is missing");

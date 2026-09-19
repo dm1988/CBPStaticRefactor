@@ -53,7 +53,7 @@ empty-state.html
 Renamed the workspace tabs to "Bid Lines", "View Trips", "Bid Reserve", "Training Lines", and "Review Bids", and added a functional sixth tab, "Submit Bids".
 
 ### Completed: Empty state
-Created `empty-state.html` without workspace navigation. It presents a centered upload CTA that opens the real Import panel, and the Page 3 Support menu links to the empty-state preview.
+Created `empty-state.html` with the standard top header but without workspace tabs or sub-navigation. It presents a centered upload CTA that opens the real Import panel, and the Page 3 Support menu links to the empty-state preview.
 
 ### Completed: Establish static multi-tenancy treatment
 Currently:
@@ -224,6 +224,7 @@ The following architectural and stylistic issues were identified across the main
 | Completed: **Layout** | `#workspaceControlsDeck` uses a responsive two-column grid when active filters are present. |
 | Completed: **Navigation** | The actual JUMP control now uses the dedicated `.workspace-jump-fab` selector and is anchored to the lower-right safe area. Header `.tab-jump` controls remain in the sticky navigation flow. |
 | Completed: **Mobile Bid Selection** | Bid Selection is an accessible primary tab at every breakpoint. Its bid-window status row sits below the workspace sub-navigation and appears only while the Selection panel is active. |
+| Completed: **Dataset Banner** | Removed the embedded Import action and hint, and set the status to “Viewing October 2026 - 777 Bids” across initial markup and hydrated rendering. |
 | Completed: **Table** | Table headers are sticky with navigation and quick-filter offsets. |
 
 **Actionable Findings**

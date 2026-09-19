@@ -18928,7 +18928,7 @@ function renderData(data) {
   renderProfileButton();
   renderSummary();
   const datasetBanner = $("currentDatasetBanner");
-  if (datasetBanner) datasetBanner.innerHTML = getCurrentDatasetBanner(data);
+  if (datasetBanner) datasetBanner.textContent = getCurrentDatasetBanner(data);
   scheduleBidWindowBannerUpdates();
   updateImportFleetButtons();
   renderCurrentPackagePanel();
@@ -19203,13 +19203,8 @@ function scheduleBidWindowBannerUpdates() {
   tick().catch((error) => console.warn("Bid window banner refresh skipped:", error.message));
 }
 
-function getCurrentDatasetBanner(data = state.data) {
-  if (!data?.metadata?.start || !data?.metadata?.end) {
-    return "Please upload or select a bid package.";
-  }
-  const fleet = detectFleetType(data) || "selected";
-  const period = getDisplayBidMonth(data);
-  return `<span class="dataset-banner-kicker">You are viewing:</span><br><span class="dataset-banner-package">${escapeHtml(period)} - ${escapeHtml(fleet)} bid package</span>`;
+function getCurrentDatasetBanner() {
+  return "Viewing October 2026 - 777 Bids";
 }
 
 function formatPackageTimestamp(value) {

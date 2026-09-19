@@ -815,8 +815,8 @@ body.theme-dark .topbar-menu-panel {
 .dataset-status-bar.current-dataset-banner {
   box-sizing: border-box;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 14px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
   align-items: center;
   width: 100%;
   min-width: 0;
@@ -840,36 +840,9 @@ body.theme-dark .topbar-menu-panel {
   white-space: nowrap;
 }
 
-.dataset-status-bar .dataset-import-action {
-  min-width: 86px;
-  min-height: 34px;
-  padding: 6px 16px;
-  border-color: var(--accent);
-  border-radius: 6px;
-  background: var(--accent);
-  color: var(--on-accent);
-  font-weight: 750;
-}
-
-.dataset-status-bar .dataset-import-action:hover,
-.dataset-status-bar .dataset-import-action:focus-visible,
-.dataset-status-bar .dataset-import-action.is-active,
-.dataset-status-bar .dataset-import-action.is-import-attention {
-  border-color: var(--accent-strong);
-  background: var(--accent-strong);
-  color: var(--on-accent);
-}
-
 @media (max-width: 520px) {
   .dataset-status-bar.current-dataset-banner {
-    gap: 8px;
     padding-inline: 12px;
-  }
-
-  .dataset-status-bar .dataset-import-action {
-    min-width: 68px;
-    padding-inline: 10px;
-    font-size: 13px;
   }
 }
 
@@ -1067,7 +1040,6 @@ body.workspace-page.theme-dark {
 
 body.workspace-page :is(
   .btn-primary:not(.reset-lines-btn, .reset-cities-btn),
-  .dataset-status-bar .dataset-import-action,
   .workspace-jump-fab.lines-panel-navigation-toggle,
   .lines-panel-navigation.is-open .workspace-jump-fab.lines-panel-navigation-toggle
 ) {
@@ -1078,7 +1050,6 @@ body.workspace-page :is(
 
 body.workspace-page :is(
   .btn-primary:not(.reset-lines-btn, .reset-cities-btn),
-  .dataset-status-bar .dataset-import-action,
   .workspace-jump-fab.lines-panel-navigation-toggle,
   .lines-panel-navigation.is-open .workspace-jump-fab.lines-panel-navigation-toggle
 ):hover:not(:disabled) {
@@ -1156,7 +1127,6 @@ body.workspace-page :is(
   .btn-primary,
   .btn-secondary,
   .accordion-toggle,
-  .dataset-import-action,
   .workspace-subnav .tab-jump,
   .lines-panel-navigation-toggle,
   .lines-panel-navigation-button,
@@ -1201,9 +1171,13 @@ body.workspace-page :is(.btn-primary, .btn-secondary, .lines-panel-navigation-bu
 
 .empty-state-shell {
   display: grid;
-  min-height: 100vh;
+  min-height: calc(100dvh - 84px);
   place-items: center;
   padding: clamp(24px, 6vw, 72px);
+}
+
+.empty-state-topbar {
+  position: relative;
 }
 
 .empty-state-hero {
