@@ -225,6 +225,7 @@ The following architectural and stylistic issues were identified across the main
 | Completed: **Navigation** | The actual JUMP control now uses the dedicated `.workspace-jump-fab` selector and is anchored to the lower-right safe area. Header `.tab-jump` controls remain in the sticky navigation flow. |
 | Completed: **Mobile Bid Selection** | Bid Selection is an accessible primary tab at every breakpoint. Its bid-window status row sits below the workspace sub-navigation and appears only while the Selection panel is active. |
 | Completed: **Dataset Banner** | Removed the embedded Import action and hint, and set the status to “Viewing October 2026 - 777 Bids” across initial markup and hydrated rendering. |
+| Completed: **Navigation Icons** | Added consistent inline stroke icons for Bid Lines, View Trips, Bid Reserve, Training Lines, Review Bids, and Submit Bids, with inherited state colors and stronger active strokes. |
 | Completed: **Table** | Table headers are sticky with navigation and quick-filter offsets. |
 
 **Actionable Findings**

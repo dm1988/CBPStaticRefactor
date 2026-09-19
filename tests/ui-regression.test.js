@@ -29,7 +29,7 @@ Object.entries(primaryTabs).forEach(([tab, label]) => {
   const panelId = `${tab}Panel`;
   const tabId = `${tab}Tab`;
   assert(
-    new RegExp(`<button[^>]+data-tab=["']${tab}["'][^>]*>${label}<\/button>`, "i").test(primaryGroupMarkup),
+    new RegExp(`<button[^>]+data-tab=["']${tab}["'][^>]*>[\\s\\S]*?<span>${label}<\\/span>[\\s\\S]*?<\\/button>`, "i").test(primaryGroupMarkup),
     `Missing primary navigation control: ${tab}`,
   );
   assert(
@@ -43,6 +43,10 @@ Object.entries(primaryTabs).forEach(([tab, label]) => {
 });
 assert(/tab-group tab-group-primary["'][^>]+role=["']tablist["']/.test(page3),
   "Primary navigation must expose a tablist role");
+assert((primaryGroupMarkup.match(/class=["']tab-icon["']/g) || []).length === 6,
+  "Each primary workspace tab must include one semantic icon");
+assert((primaryGroupMarkup.match(/class=["']tab-icon["'][^>]+aria-hidden=["']true["']/g) || []).length === 6,
+  "Primary tab icons must remain decorative for assistive technology");
 
 assert(/\.tabs\s+\.tab-group-primary\s*\{[\s\S]*?grid-template-columns:\s*repeat\(6,/m.test(css),
   "Primary navigation must include six desktop columns");

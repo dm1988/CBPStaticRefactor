@@ -1663,7 +1663,7 @@ function startWorkspaceVerificationWatchdog() {
     const datasetBanner = $("currentDatasetBanner");
     if (datasetBanner && /standby|verifying/i.test(datasetBanner.textContent || "")) {
       datasetBanner.textContent = hasLoadedPackageData()
-        ? getCurrentDatasetBanner(state.data)
+        ? getCurrentDatasetBanner()
         : "Workspace checks are taking longer than expected. You may continue with saved data or open Import.";
     }
     const bidWindowMessage = $("bidWindowMessage");
@@ -14918,7 +14918,6 @@ function updateImportAttentionCue() {
   if (!importTab || isProfilePage()) return;
   const shouldCue = !hasLoadedPackageData() && state.activeTab !== "import";
   importTab.classList.toggle("is-import-attention", shouldCue);
-  importTab.setAttribute("aria-describedby", shouldCue ? "importAttentionHint" : "");
 }
 
 function applyPreferenceChanges({ reimport = false } = {}) {
@@ -18928,7 +18927,7 @@ function renderData(data) {
   renderProfileButton();
   renderSummary();
   const datasetBanner = $("currentDatasetBanner");
-  if (datasetBanner) datasetBanner.textContent = getCurrentDatasetBanner(data);
+  if (datasetBanner) datasetBanner.textContent = getCurrentDatasetBanner();
   scheduleBidWindowBannerUpdates();
   updateImportFleetButtons();
   renderCurrentPackagePanel();
