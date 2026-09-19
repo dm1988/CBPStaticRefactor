@@ -166,9 +166,10 @@ Completed: Spacing: A consistent 12px gap separates the two items.
   - Trips
   - Reserve
   - Training
-- Completed: Lines, Trips, Reserve, and Training lead the responsive navigation; package status now uses a full-width strip below it with Import grouped at the far right.
+- Completed: Package status and Import sit in a full-width strip above the primary navigation; Calendar, Filters, and Results use a dedicated sub-navigation row below it.
 - Completed: Replaced the boxed Lines, Trips, Reserve, and Training buttons with minimalist underline tabs and flattened the secondary navigation container.
 - Completed: Refined the navigation typography, removed the remaining Jump-group border, and restyled Support as a compact utility pill with a mobile-safe touch target.
+- Completed: Softened schedule, filter, and bid-panel typography with sentence case, normal tracking, and medium weights for headings, labels, and Jump navigation.
 
 1. **Summary Metrics Bar**
 * Completed: **Improve Visual Hierarchy:** Standardize card heights and alignment for metrics (*Flying lines*, *Reserve lines*, *Trips*, *Line credit range*, etc.). Use lighter borders or subtle card backgrounds to make the key figures stand out more clearly without cluttering the screen.

@@ -271,6 +271,69 @@ body.landing-page {
   }
 }
 
+/* Calendar, Filters, and Results form a distinct secondary navigation row. */
+.workspace-subnav {
+  position: sticky;
+  top: var(--primary-tabs-offset, 0px);
+  z-index: 59;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-height: 40px;
+  padding: 0 clamp(16px, 4vw, 48px);
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--band) 94%, var(--surface));
+}
+
+.workspace-subnav .tab-jump {
+  min-height: 40px;
+  padding: 8px 2px 6px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
+  box-shadow: none;
+  font-size: 12px;
+  font-weight: 750;
+  transform: none;
+}
+
+.workspace-subnav .tab-jump:hover {
+  border-bottom-color: color-mix(in srgb, var(--accent) 36%, transparent);
+  background: transparent;
+  color: var(--ink);
+  transform: none;
+}
+
+.workspace-subnav .tab-jump.is-jump-active,
+.workspace-subnav .tab-jump.is-jump-active:hover,
+.workspace-subnav .tab-jump:focus-visible {
+  border-color: transparent;
+  border-bottom-color: var(--accent);
+  background: transparent;
+  color: var(--accent-strong);
+  box-shadow: none;
+}
+
+.workspace-subnav .tab-jump:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--focus) 48%, transparent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 520px) {
+  .workspace-subnav {
+    justify-content: space-between;
+    gap: 8px;
+    padding-inline: 16px;
+  }
+
+  .workspace-subnav .tab-jump {
+    flex: 1 1 0;
+    font-size: 13px;
+  }
+}
+
 /* Minimal primary tabs: use an underline instead of boxed buttons. */
 .tabs .tab-group-primary .tab {
   appearance: none;
@@ -792,4 +855,42 @@ body.theme-dark .topbar-menu-panel {
     padding-inline: 10px;
     font-size: 13px;
   }
+}
+
+/* Softer sentence-case typography for dense bid-management cards. */
+:is(#workspaceControlsDeck, #linesPanel, #tripsPanel, #reservesPanel, #trainingPanel) .eyebrow {
+  font-weight: 550;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+:is(#workspaceControlsDeck, #linesPanel, #tripsPanel, #reservesPanel, #trainingPanel) h2 {
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+:is(#workspaceControlsDeck, #linesPanel, #tripsPanel, #reservesPanel, #trainingPanel) h3,
+:is(#workspaceControlsDeck, #linesPanel, #tripsPanel, #reservesPanel, #trainingPanel) .filter-cluster-toggle {
+  font-weight: 550;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+:is(#workspaceControlsDeck, #linesPanel, #tripsPanel, #reservesPanel, #trainingPanel) label {
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.lines-panel-navigation-button {
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.workspace-jump-fab.lines-panel-navigation-toggle {
+  font-weight: 650;
+  letter-spacing: normal;
+  text-transform: none;
 }

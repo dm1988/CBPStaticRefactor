@@ -162,19 +162,20 @@
       </div>
     </header>
 
-    <nav class="tabs" aria-label="Bid sections and page jumps">
+    <section class="current-dataset-banner dataset-status-bar is-verifying" aria-label="Current bid package" aria-live="polite">
+      <p id="currentDatasetBanner">Standby. Verifying your workspace.</p>
+      <button class="tab dataset-import-action" data-tab="import">Import</button>
+      <span id="importAttentionHint" class="visually-hidden">Select Import to load a bid package.</span>
+    </section>
+
+    <nav class="tabs" aria-label="Bid views and selection">
       <div class="tab-group tab-group-primary" aria-label="Bid views">
         <button class="tab is-active" data-tab="lines">Lines</button>
         <button class="tab" data-tab="trips">Trips</button>
         <button class="tab" data-tab="reserves">Reserve</button>
         <button class="tab" data-tab="training">Training</button>
       </div>
-      <div class="tab-group tab-group-jumps" aria-label="Page jumps">
-        <span class="tab-jump-buttons">
-          <button class="tab tab-jump" data-view-target="calendar">Calendar</button>
-          <button class="tab tab-jump" data-view-target="filters">Filters</button>
-          <button class="tab tab-jump" data-view-target="results">Results</button>
-        </span>
+      <div class="tab-group tab-group-jumps" aria-label="Bid status and selection">
         <section id="bidWindowBanner" class="bid-window-banner" aria-live="polite">
           <span id="bidWindowMessage">BID WINDOW INFORMATION. STANDBY.</span>
         </section>
@@ -182,11 +183,11 @@
       </div>
     </nav>
 
-    <section class="current-dataset-banner dataset-status-bar is-verifying" aria-label="Current bid package" aria-live="polite">
-      <p id="currentDatasetBanner">Standby. Verifying your workspace.</p>
-      <button class="tab dataset-import-action" data-tab="import">Import</button>
-      <span id="importAttentionHint" class="visually-hidden">Select Import to load a bid package.</span>
-    </section>
+    <nav class="workspace-subnav" aria-label="Workspace sections">
+      <button class="tab tab-jump" data-view-target="calendar">Calendar</button>
+      <button class="tab tab-jump" data-view-target="filters">Filters</button>
+      <button class="tab tab-jump" data-view-target="results">Results</button>
+    </nav>
 
     <div id="newUserSplashModal" class="new-user-splash-modal" hidden>
       <div class="new-user-splash-backdrop" data-close-new-user-splash></div>
@@ -365,7 +366,7 @@
               <h2>Line filters</h2>
             </div>
             <div class="section-actions">
-            <button id="resetLineFilters" type="button" class="btn-primary reset-lines-btn">RESET LINES</button>
+            <button id="resetLineFilters" type="button" class="btn-primary reset-lines-btn">Reset lines</button>
               <button type="button" class="accordion-toggle" aria-expanded="true" aria-controls="lineFiltersContent" data-accordion-target="lineFiltersContent">
                 <span class="accordion-toggle-label">Collapse</span>
                 <span class="accordion-chevron" aria-hidden="true"></span>
@@ -415,7 +416,7 @@
                 </select>
               </label>
               <label data-feature="advancedLineFilters">
-                CARRY-IN DAYS
+                Carry-in days
                 <select id="lineCarry">
                   <option value="">No Filter</option>
                   <option value="hidden">Hidden</option>
@@ -423,7 +424,7 @@
                 </select>
               </label>
               <label data-feature="advancedLineFilters">
-                SPLIT LINE
+                Split line
                 <select id="lineSplit">
                   <option value="">No Filter</option>
                   <option value="hidden">Hidden</option>
@@ -436,19 +437,19 @@
             <h3>Airports</h3>
             <div class="filter-cluster-controls">
               <label data-feature="advancedLineFilters">
-                CITY - START
+                City - start
                 <select id="lineStart">
                   <option value="" selected>No Filter</option>
                 </select>
               </label>
               <label data-feature="advancedLineFilters">
-                CITY - END
+                City - end
                 <select id="lineEnd">
                   <option value="" selected>No Filter</option>
                 </select>
               </label>
               <label data-feature="advancedLineFilters">
-                CITY - STAY/REST
+                City - stay/rest
                 <select id="lineThrough">
                   <option value="" selected>No Filter</option>
                 </select>
@@ -459,7 +460,7 @@
             <h3>Miscellaneous</h3>
             <div class="filter-cluster-controls">
               <label data-feature="advancedLineFilters">
-                DEADHEADS
+                Deadheads
                 <select id="lineDeadheads">
                   <option value="">No Filter</option>
                   <option value="hidden">Hidden</option>
@@ -467,14 +468,14 @@
                 </select>
               </label>
               <label data-feature="advancedLineFilters">
-                LONG STAY
+                Long stay
                 <select id="lineLongStay">
                   <option value="">No Filter</option>
                   <option value="only">Show Only</option>
                 </select>
               </label>
               <label data-feature="advancedLineFilters">
-                TRIP START - BREAKFAST FRIENDLY
+                Trip start - breakfast friendly
                 <select id="lineBreakfastFriendly">
                   <option value="">No Filter</option>
                   <option value="on">Show Only</option>
@@ -522,7 +523,7 @@
               <h2>Avoid airports</h2>
             </div>
             <div class="section-actions">
-              <button type="button" class="btn-primary reset-cities-btn" data-city="">RESET CITIES</button>
+              <button type="button" class="btn-primary reset-cities-btn" data-city="">Reset cities</button>
               <button type="button" class="accordion-toggle" aria-expanded="true" aria-controls="lineAvoid" data-accordion-target="lineAvoid">
                 <span class="accordion-toggle-label">Collapse</span>
                 <span class="accordion-chevron" aria-hidden="true"></span>
@@ -690,7 +691,7 @@
               <h2>Trip filters</h2>
             </div>
             <div class="section-actions">
-            <button id="resetTripFilters" type="button" class="btn-primary reset-lines-btn">RESET TRIPS</button>
+            <button id="resetTripFilters" type="button" class="btn-primary reset-lines-btn">Reset trips</button>
               <button type="button" class="accordion-toggle" aria-expanded="true" aria-controls="tripFiltersContent" data-accordion-target="tripFiltersContent">
                 <span class="accordion-toggle-label">Collapse</span>
                 <span class="accordion-chevron" aria-hidden="true"></span>
@@ -720,19 +721,19 @@
             <h3>Airports</h3>
             <div class="filter-cluster-controls">
               <label data-feature="advancedTripFilters">
-                CITY - START
+                City - start
                 <select id="tripStart">
                   <option value="" selected>No Filter</option>
                 </select>
               </label>
               <label data-feature="advancedTripFilters">
-                CITY - END
+                City - end
                 <select id="tripEnd">
                   <option value="" selected>No Filter</option>
                 </select>
               </label>
               <label data-feature="advancedTripFilters">
-                CITY - STAY/REST
+                City - stay/rest
                 <select id="tripThrough">
                   <option value="" selected>No Filter</option>
                 </select>
@@ -743,14 +744,14 @@
             <h3>Miscellaneous</h3>
             <div class="filter-cluster-controls">
               <label data-feature="advancedTripFilters">
-                DEADHEADS
+                Deadheads
                 <select id="tripDeadheads">
                   <option value="">No Filter</option>
                   <option value="hidden">Hidden</option>
                 </select>
               </label>
               <label data-feature="advancedTripFilters">
-                LONG STAY
+                Long stay
                 <select id="tripLongStay">
                   <option value="">No Filter</option>
                   <option value="only">Show Only</option>
@@ -766,7 +767,7 @@
               <h2>Avoid airports</h2>
             </div>
             <div class="section-actions">
-              <button type="button" class="btn-primary reset-cities-btn" data-city="">RESET CITIES</button>
+              <button type="button" class="btn-primary reset-cities-btn" data-city="">Reset cities</button>
               <button type="button" class="accordion-toggle" aria-expanded="true" aria-controls="tripAvoid" data-accordion-target="tripAvoid">
                 <span class="accordion-toggle-label">Collapse</span>
                 <span class="accordion-chevron" aria-hidden="true"></span>
@@ -838,7 +839,7 @@
               <h2>Reserve filters</h2>
             </div>
             <div class="section-actions">
-            <button id="resetReserveFilters" type="button" class="btn-primary reset-lines-btn">RESET RESERVE</button>
+            <button id="resetReserveFilters" type="button" class="btn-primary reset-lines-btn">Reset reserve</button>
               <button type="button" class="accordion-toggle" aria-expanded="true" aria-controls="reserveFiltersContent" data-accordion-target="reserveFiltersContent">
                 <span class="accordion-toggle-label">Collapse</span>
                 <span class="accordion-chevron" aria-hidden="true"></span>
@@ -849,7 +850,7 @@
             <h3>Reserve</h3>
             <div class="filter-cluster-controls">
               <label data-feature="reserveFilters">
-                Reserve Window
+                Reserve window
                 <select id="reserveStart">
                   <option value="" selected>No Filter</option>
                 </select>
@@ -982,7 +983,7 @@
               <h2>Training filters</h2>
             </div>
             <div class="section-actions">
-              <button id="resetTrainingFilters" type="button" class="btn-primary reset-lines-btn">RESET TRAINING</button>
+              <button id="resetTrainingFilters" type="button" class="btn-primary reset-lines-btn">Reset training</button>
               <button type="button" class="accordion-toggle" aria-expanded="true" aria-controls="trainingFiltersContent" data-accordion-target="trainingFiltersContent">
                 <span class="accordion-toggle-label">Collapse</span>
                 <span class="accordion-chevron" aria-hidden="true"></span>
@@ -993,13 +994,13 @@
             <h3>Training</h3>
             <div class="filter-cluster-controls">
               <label data-feature="trainingFilters">
-                Training Window
+                Training window
                 <select id="trainingStart">
                   <option value="" selected>No Filter</option>
                 </select>
               </label>
               <label data-feature="trainingFilters">
-                Training Placement
+                Training placement
                 <select id="trainingPlacement">
                   <option value="" selected>No Filter</option>
                   <option value="front">Front Half - Show Only</option>
