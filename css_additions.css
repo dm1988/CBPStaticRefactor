@@ -375,12 +375,6 @@ body.landing-page {
   outline-offset: 2px;
 }
 
-.tabs .tab-group-jumps {
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-}
-
 /* Support is a lightweight utility pill rather than another boxed action. */
 .support-menu > summary.topbar-action {
   display: inline-flex;
@@ -738,9 +732,7 @@ body.theme-dark .topbar-menu-panel {
 .tabs {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas:
-    "views"
-    "secondary";
+  grid-template-areas: "views";
   gap: 8px 12px;
   align-items: center;
 }
@@ -752,15 +744,9 @@ body.theme-dark .topbar-menu-panel {
 .tabs .tab-group-primary {
   grid-area: views;
   display: grid;
-  grid-template-columns: repeat(4, minmax(76px, auto));
+  grid-template-columns: repeat(5, minmax(76px, auto));
   gap: 7px;
   justify-self: start;
-  min-width: 0;
-}
-
-.tabs .tab-group-jumps {
-  grid-area: secondary;
-  width: 100%;
   min-width: 0;
 }
 
@@ -771,13 +757,11 @@ body.theme-dark .topbar-menu-panel {
 @media (max-width: 1100px) {
   .tabs {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas:
-      "views"
-      "secondary";
+    grid-template-areas: "views";
   }
 
   .tabs .tab-group-primary {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     justify-self: stretch;
     width: 100%;
   }
@@ -785,6 +769,37 @@ body.theme-dark .topbar-menu-panel {
   .tabs .tab-group-primary > .tab {
     width: 100%;
     min-width: 0;
+  }
+}
+
+.bid-window-status-row {
+  box-sizing: border-box;
+  display: none;
+  width: 100%;
+  min-width: 0;
+  padding: 12px clamp(16px, 4vw, 48px);
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--band) 78%, var(--surface));
+}
+
+.workspace-page[data-active-tab="selection"] .bid-window-status-row:not([hidden]) {
+  display: flex;
+}
+
+.bid-window-status-row .bid-window-banner {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 700px) {
+  .tabs .tab-group-primary {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .tabs .tab-group-primary > .tab[data-tab="selection"] {
+    grid-column: 1 / -1;
+    width: 100%;
   }
 }
 

@@ -14861,14 +14861,27 @@ function setActiveTab(tabName, options = {}) {
   const previousTop = tabs?.getBoundingClientRect().top ?? null;
   if (options.userInitiated) state.startupTabOverride = tabName;
   state.activeTab = tabName;
+  document.body.dataset.activeTab = tabName;
   saveWorkspaceNavigationState();
   if (!["lines", "trips", "reserves", "training"].includes(tabName)) unlockActiveSectionJumpTarget();
   document.body.classList.toggle("is-import-focus", tabName === "import");
   updateImportAttentionCue();
-  document.querySelectorAll(".tab").forEach((tab) => tab.classList.toggle("is-active", tab.dataset.tab === tabName));
+  document.querySelectorAll(".tab").forEach((tab) => {
+    const isActive = tab.dataset.tab === tabName;
+    tab.classList.toggle("is-active", isActive);
+    if (tab.getAttribute("role") === "tab") {
+      tab.setAttribute("aria-selected", String(isActive));
+      tab.tabIndex = isActive ? 0 : -1;
+    }
+  });
   document.querySelectorAll(".panel").forEach((panel) => panel.classList.remove("is-active"));
   const panel = $(`${tabName}Panel`);
   panel?.classList.add("is-active");
+  document.querySelectorAll('[role="tabpanel"]').forEach((tabPanel) => {
+    tabPanel.hidden = tabPanel !== panel;
+  });
+  const bidWindowStatusRow = document.querySelector(".bid-window-status-row");
+  if (bidWindowStatusRow) bidWindowStatusRow.hidden = tabName !== "selection";
   syncWorkspaceControlsDeck(tabName);
   if (!options.skipRender) renderActiveTab();
   updateStickyOffsets();
@@ -18328,6 +18341,24 @@ function setupTabs() {
         preserveViewTarget: preservedViewTarget,
       });
     });
+  });
+
+  const tabList = document.querySelector('.tab-group-primary[role="tablist"]');
+  tabList?.addEventListener("keydown", (event) => {
+    const currentTab = event.target.closest('[role="tab"]');
+    if (!currentTab) return;
+    const tabs = Array.from(tabList.querySelectorAll('[role="tab"]:not(:disabled)'));
+    const currentIndex = tabs.indexOf(currentTab);
+    if (currentIndex < 0) return;
+    const targetIndex = {
+      ArrowLeft: (currentIndex - 1 + tabs.length) % tabs.length,
+      ArrowRight: (currentIndex + 1) % tabs.length,
+      Home: 0,
+      End: tabs.length - 1,
+    }[event.key];
+    if (targetIndex === undefined) return;
+    event.preventDefault();
+    tabs[targetIndex].focus();
   });
 }
 

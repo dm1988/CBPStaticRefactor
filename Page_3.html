@@ -106,7 +106,7 @@
   <link rel="stylesheet" href="css_additions.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
-  <body class="theme-dark workspace-page workspace-is-hydrating workspace-is-verifying" style="background:#07111d;">
+  <body class="theme-dark workspace-page workspace-is-hydrating workspace-is-verifying" data-active-tab="lines" style="background:#07111d;">
     <script>
       (() => {
         if (document.documentElement.classList.contains("theme-dark")) {
@@ -169,17 +169,12 @@
     </section>
 
     <nav class="tabs" aria-label="Bid views and selection">
-      <div class="tab-group tab-group-primary" aria-label="Bid views">
-        <button class="tab is-active" data-tab="lines">Lines</button>
-        <button class="tab" data-tab="trips">Trips</button>
-        <button class="tab" data-tab="reserves">Reserve</button>
-        <button class="tab" data-tab="training">Training</button>
-      </div>
-      <div class="tab-group tab-group-jumps" aria-label="Bid status and selection">
-        <section id="bidWindowBanner" class="bid-window-banner" aria-live="polite">
-          <span id="bidWindowMessage">BID WINDOW INFORMATION. STANDBY.</span>
-        </section>
-        <button class="tab" data-tab="selection">Bid Selection</button>
+      <div class="tab-group tab-group-primary" role="tablist" aria-label="Bid views">
+        <button id="linesTab" class="tab is-active" type="button" role="tab" data-tab="lines" aria-selected="true" aria-controls="linesPanel" tabindex="0">Lines</button>
+        <button id="tripsTab" class="tab" type="button" role="tab" data-tab="trips" aria-selected="false" aria-controls="tripsPanel" tabindex="-1">Trips</button>
+        <button id="reservesTab" class="tab" type="button" role="tab" data-tab="reserves" aria-selected="false" aria-controls="reservesPanel" tabindex="-1">Reserve</button>
+        <button id="trainingTab" class="tab" type="button" role="tab" data-tab="training" aria-selected="false" aria-controls="trainingPanel" tabindex="-1">Training</button>
+        <button id="selectionTab" class="tab" type="button" role="tab" data-tab="selection" aria-selected="false" aria-controls="selectionPanel" tabindex="-1">Bid Selection</button>
       </div>
     </nav>
 
@@ -188,6 +183,12 @@
       <button class="tab tab-jump" data-view-target="filters">Filters</button>
       <button class="tab tab-jump" data-view-target="results">Results</button>
     </nav>
+
+    <div class="bid-window-status-row" hidden>
+      <section id="bidWindowBanner" class="bid-window-banner" aria-label="Bid window status" aria-live="polite">
+        <span id="bidWindowMessage">BID WINDOW INFORMATION. STANDBY.</span>
+      </section>
+    </div>
 
     <div id="newUserSplashModal" class="new-user-splash-modal" hidden>
       <div class="new-user-splash-backdrop" data-close-new-user-splash></div>
@@ -358,7 +359,7 @@
         <div id="activeFiltersSlot" class="active-filters-slot"></div>
       </section>
 
-      <section class="panel is-active" id="linesPanel">
+      <section class="panel is-active" id="linesPanel" role="tabpanel" aria-labelledby="linesTab" tabindex="0">
         <div id="lineFiltersContent" class="filters">
           <div class="section-header filter-section-header filter-reset-row">
             <div>
@@ -683,7 +684,7 @@
         </div>
       </section>
 
-      <section class="panel" id="tripsPanel">
+      <section class="panel" id="tripsPanel" role="tabpanel" aria-labelledby="tripsTab" tabindex="0" hidden>
         <div id="tripFiltersContent" class="filters">
           <div class="section-header filter-section-header filter-reset-row">
             <div>
@@ -831,7 +832,7 @@
         </div>
       </section>
 
-      <section class="panel" id="reservesPanel">
+      <section class="panel" id="reservesPanel" role="tabpanel" aria-labelledby="reservesTab" tabindex="0" hidden>
         <div id="reserveFiltersContent" class="filters">
           <div class="section-header filter-section-header filter-reset-row">
             <div>
@@ -975,7 +976,7 @@
         </div>
       </section>
 
-      <section class="panel" id="trainingPanel">
+      <section class="panel" id="trainingPanel" role="tabpanel" aria-labelledby="trainingTab" tabindex="0" hidden>
         <div id="trainingFiltersContent" class="filters">
           <div class="section-header filter-section-header filter-reset-row">
             <div>
@@ -1107,7 +1108,7 @@
         </div>
       </section>
 
-      <section class="panel" id="selectionPanel">
+      <section class="panel" id="selectionPanel" role="tabpanel" aria-labelledby="selectionTab" tabindex="0" hidden>
         <div id="selectionFiltersHeader" class="selection-controls">
           <div id="selectionFiltersContent" class="selection-filters" aria-label="Displayed bid selection filters">
             <div class="section-header filter-section-header filter-reset-row selection-filter-header">

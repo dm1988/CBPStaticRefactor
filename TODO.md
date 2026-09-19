@@ -215,6 +215,7 @@ The following architectural and stylistic issues were identified across the main
 | Completed: **Metrics Bar** | `#summaryGrid` uses equal-height grid rows; actionable metrics are buttons with pointer, hover, and focus states while static metrics remain neutral. |
 | Completed: **Layout** | `#workspaceControlsDeck` uses a responsive two-column grid when active filters are present. |
 | Completed: **Navigation** | The actual JUMP control now uses the dedicated `.workspace-jump-fab` selector and is anchored to the lower-right safe area. Header `.tab-jump` controls remain in the sticky navigation flow. |
+| Completed: **Mobile Bid Selection** | Bid Selection is an accessible primary tab at every breakpoint. Its bid-window status row sits below the workspace sub-navigation and appears only while the Selection panel is active. |
 | Completed: **Table** | Table headers are sticky with navigation and quick-filter offsets. |
 
 **Actionable Findings**
