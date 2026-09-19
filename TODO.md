@@ -18,9 +18,11 @@ Investivate upload validation, rate limits, size limits
 
 How does the schedule import work?
 
-## normalizedFleet XSS
+## Completed: normalizedFleet XSS investigation
+Fleet values are normalized through the supported-fleet allowlist before use, and the remaining profile label is rendered through safe text assignment.
 
-## confirmDestructiveAction is interesting, investigate
+## Completed: confirmDestructiveAction investigation
+Confirmation titles, messages, and action labels are assigned with `textContent`; callers cannot inject HTML through this modal.
 
 # Usage
 1. This is a static refactor only, no dynamic data is provided in this scope.
@@ -45,7 +47,7 @@ Page_3.html
 
 # Landing page
 ## Tasks
-### Current focus: Establish strong multi tenancy
+### Completed: Establish static multi-tenancy treatment
 Currently:
 The airline selection is a vertical stack where several airlines are marked as "Service not currently available."
 
@@ -59,10 +61,10 @@ Implimentation: back end and front end refactor not covered in this scope.
 
 Completed: Static landing-page treatment for multitenancy. The page now presents one account login path instead of requiring users to choose an airline.
 
-### Feat: Notify me when available
-Feature Suggestion: Implement a "Notify Me" flow for unavailable airlines to capture lead data for future expansion. Have user provide email for a mailing list
+### Completed: Notify me when available
+The landing page links to a focused airline-interest form that captures name, email, and airline through the existing `airline_interest` workflow.
 
-### Adopt a Two-Column "Hero" Layout
+### Completed: Adopt a Two-Column "Hero" Layout
 Currently:
 The current layout is a single-column stack (grid-template-columns: 649px) centered on the page. On desktop, this leaves a significant amount of wasted horizontal space.
 
@@ -71,13 +73,13 @@ Left Side: Value proposition and "How it works" (The "Bid Smarter" messaging).
 Right Side: The Airline Access/Sign-in card.
 Implementation: Change .landing-shell to grid-template-columns: 1fr 1fr for screens above 1024px.
 
-### Visual Hierarchy & Messaging
+### Completed: Visual Hierarchy & Messaging
 The current brand-panel and access-card have almost equal visual weight.
 
 Improvement: Reduce the size of the "Airline Access" card container and increase the font-weight and scale of your primary headline ("Plan smarter. Bid confidently.").
 Visual Polish: The background-color: rgb(7, 26, 47) is very dark. Consider using a subtle gradient or a high-quality aviation-themed background image with an overlay to provide more professional context.
 
-### Suggested CSS Adjustments
+### Completed: Suggested CSS Adjustments
 /* Example of a more responsive, multi-tenant grid */
 .landing-shell {
   display: grid;
@@ -97,30 +99,36 @@ Visual Polish: The background-color: rgb(7, 26, 47) is very dark. Consider using
 
 # Login page
 ## Tasks
-### Validate users and redirect to workspace
+### Completed: Validate users and redirect to workspace
 Currently:
 Users with an active valid sessions are still displayed a login page with a CTA button `Continue to workspace`. A `sign out` button is displayed when a users main tentent is to log into the workspace
 
 Problem:
 Users are presented with an additional step and too much information. 
 
-Fix: Remove the `sign out` button. Valid users with a valid session should be redirected to the workspace. Only users not signed in or users without a verified email should only see this page.
+Completed implementation: Removed the `sign out` button. Valid verified sessions redirect to the workspace; users without a session or verified email remain on this page.
 
-### Investigate unknown markup tags
+Completed: The login page no longer renders Sign Out or signed-in continuation controls. Verified sessions redirect to `Page_3.html`; unverified sessions remain on the login page with guidance.
+
+### Completed: Investigate unknown markup tags
 <cdbm-wrmnv> and <vanwbekn-i>
 
 These tags look like they might be injected by a browser extension, a security script (like bot detection), or they could be remnants of a specific framework. Currently, they have 0x0 dimensions, so they aren't visually impacting the layout, but if they are supposed to be functional (like a chat widget or a cookie banner), they are currently invisible.
 
-### Refactor Script tags within body
+Completed: Neither custom tag exists in the refactored source. Regression coverage prevents them from being committed; any runtime appearance is external injection.
+
+### Completed: Refactor Script tags within body
 Stacking and Scripts
 There are three <script> tags placed directly inside the body after the <main> content.
 
 Best Practice: While common, ensure these aren't blocking the initial render. Since they are at the end, they shouldn't, but using defer is usually preferred for modern performance standards.
 
-### Layout & Visual Hierarchy
+Completed: Login dependencies now load with `defer` from the document head in dependency order. The missing legacy offline script reference was removed.
+
+### Completed: Layout & Visual Hierarchy
 ### Completed: Two-Column Switch
 The main.account-shell was using a single-column grid. Updated it to a responsive two-column layout (on larger screens) where the Brand Panel (dark background) sits alongside the Account Card (white background). This is a standard, modern pattern for login/account pages.
-Elevation: 
+Completed: Elevation:
 Replace the heavy, dark shadow with a softer, multi-layered shadow to give the card a "floating" feel.
 Completed: Rounded Corners: Increased the border-radius from 8px to 16px for a friendlier, modern aesthetic.
 2. Refined Branding
@@ -134,14 +142,16 @@ Completed: Fixed the body's centering logic to ensure the card stays perfectly c
 
 # CBP Workspace
 ## Tasks
-### High importance bug: Missing buttons on medium screens
+### Completed: High importance bug: Missing buttons on medium screens
 Currently:
 In a responsive medium screen, `Lines`, `Trips`, `Reserve`, and `Training` are not rendered to a user.
 Problem: Users cannot navigate critical core app functionality on smaller and medium screens.
 
-Fix: Establish tests asserting critical buttons shown on common format screens. Fix the html / css appropriately. 
+Completed implementation: Added regression tests asserting critical controls and responsive four-column navigation rules for common viewport layouts.
 
-### Current focus: UI/UX improvements
+Completed: Lines, Trips, Reserve, and Training use an explicit four-column responsive grid through medium and phone layouts. `tests/ui-regression.test.js` asserts the controls and breakpoint rules.
+
+## Completed: UI/UX improvements
 
 1. Header & Top Navigation
 * Completed: **Reduce Visual Noise:**
@@ -170,22 +180,23 @@ Completed: Spacing: A consistent 12px gap separates the two items.
 - Completed: Replaced the boxed Lines, Trips, Reserve, and Training buttons with minimalist underline tabs and flattened the secondary navigation container.
 - Completed: Refined the navigation typography, removed the remaining Jump-group border, and restyled Support as a compact utility pill with a mobile-safe touch target.
 - Completed: Softened schedule, filter, and bid-panel typography with sentence case, normal tracking, and medium weights for headings, labels, and Jump navigation.
+- Completed: Applied a scoped Modern Soft workspace theme with slate text hierarchy, 24px spacing, 12px radii, subtle layered shadows, and restrained hover depth.
 
 1. **Summary Metrics Bar**
 * Completed: **Improve Visual Hierarchy:** Standardize card heights and alignment for metrics (*Flying lines*, *Reserve lines*, *Trips*, *Line credit range*, etc.). Use lighter borders or subtle card backgrounds to make the key figures stand out more clearly without cluttering the screen.
 * Completed: **Add Action Indicators:** Actionable metrics (*Flying lines*, *Reserve lines*, and *Trips*) are visually distinct and navigate to their respective results.
 
 
-* **Filter & Schedule Controls**
+* Completed: **Filter & Schedule Controls**
 * Completed: **Establish a 2-Column Layout:** The schedule and active filter controls use a responsive two-column grid when space permits.
 * Completed: **Foldable Accordions:** Filter groups have clear boundaries and individual collapse controls with state-aware chevrons.
 * Completed: **Floating Action Button (FAB):** The `JUMP` control remains anchored to the side pane, while navigation tabs stay in their normal header flow.
 
 
-* **Data Display & Line Cards**
+* Completed: **Data Display & Line Cards**
 * Completed: **Scannability in Table/Linear View:** The *FLYING LINES* list contains dense blocks of metadata (*Credit gross*, *Carry-In value*, *Airports*, *Remarks*). Using structured columns, badge chips for status tags (e.g., `SPLIT LINE`, `UNLIKELY TO HOLD`), and clear color accents for carry-in vs. regular credit will significantly reduce cognitive load when scanning long lists.
 * Completed: **Sticky Table Headers:** Table headers use the workspace navigation offset and remain visible while scrolling long line lists.
-* **Sticky Quick Filters:** Keep the quick-filter bar visible without obscuring table headers on shorter viewports.
+* Completed: **Sticky Quick Filters:** Result controls remain beneath both navigation rows on roomy screens, table headers offset below them, and short viewports retain the non-sticky layout.
 
 ### Completed: Removed the redundant Home control and its divider so the primary bid views lead the navigation
 
@@ -199,18 +210,18 @@ The following architectural and stylistic issues were identified across the main
 
 | Component | Findings |
 | :--- | :--- |
-| **Header** | `topbar-actions` contains 7+ disparate buttons (FAQ, Messages, Contact Developer, Admin, etc.), causing clutter. |
-| **App Meta** | `.app-update-strip` is nested inside the brand lockup, competing with the primary logo. |
+| Completed: **Header** | Support actions are consolidated into one menu; account actions use the profile menu. |
+| Completed: **App Meta** | `.app-update-strip` is located in the profile/account menu. |
 | Completed: **Metrics Bar** | `#summaryGrid` uses equal-height grid rows; actionable metrics are buttons with pointer, hover, and focus states while static metrics remain neutral. |
-| **Layout** | Main content sections (`#workspaceControlsDeck`, `#linesPanel`) use `display: block`, causing vertical stacking rather than a 2-column grid. |
+| Completed: **Layout** | `#workspaceControlsDeck` uses a responsive two-column grid when active filters are present. |
 | Completed: **Navigation** | The actual JUMP control now uses the dedicated `.workspace-jump-fab` selector and is anchored to the lower-right safe area. Header `.tab-jump` controls remain in the sticky navigation flow. |
-| **Table** | `thead` uses `position: static`, causing headers to disappear during scrolling. |
+| Completed: **Table** | Table headers are sticky with navigation and quick-filter offsets. |
 
 **Actionable Findings**
-*   **Action Consolidation:** Group secondary actions (FAQ, Messages, Contact Developer) into a single `<details>` dropdown or a "More" menu to reclaim header space.
+*   Completed: **Action Consolidation:** FAQ, Messages, and Contact Developer use a single Support `<details>` menu.
 *   Completed: **Visual Hierarchy:** `#summaryGrid` uses a grid with standardized card heights. Actionable metrics such as "Flying lines" use pointer, hover, and focus states, while static metrics remain visually neutral.
-*   **Layout Efficiency:** Transition the main container to a grid layout to support the requested 2-column view for filters and content.
-*   **Accordions:** Standardize `.filter-cluster` headers with chevron indicators (`::after` elements) to clarify expansion states.
+*   Completed: **Layout Efficiency:** The schedule and active-filter container uses a responsive two-column grid.
+*   Completed: **Accordions:** `.filter-cluster` headers use accessible controls and state-aware chevron indicators.
 
 **Code Guidance**
 
