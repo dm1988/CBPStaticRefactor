@@ -168,6 +168,7 @@ Completed: Spacing: A consistent 12px gap separates the two items.
   - Training
 - Completed: Consolidated Home, package status, Import, Lines, Trips, Reserve, and Training into a responsive primary workflow navigation bar.
 - Completed: Replaced the boxed Lines, Trips, Reserve, and Training buttons with minimalist underline tabs and flattened the secondary navigation container.
+- Completed: Refined the navigation typography, removed the remaining Jump-group border, and restyled Support as a compact utility pill with a mobile-safe touch target.
 
 1. **Summary Metrics Bar**
 * Completed: **Improve Visual Hierarchy:** Standardize card heights and alignment for metrics (*Flying lines*, *Reserve lines*, *Trips*, *Line credit range*, etc.). Use lighter borders or subtle card backgrounds to make the key figures stand out more clearly without cluttering the screen.

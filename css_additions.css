@@ -283,7 +283,7 @@ body.landing-page {
   color: var(--muted);
   box-shadow: none;
   cursor: pointer;
-  font-weight: 750;
+  font-weight: 650;
   transform: none;
 }
 
@@ -303,7 +303,7 @@ body.landing-page {
   background: transparent;
   color: var(--accent-strong);
   box-shadow: none;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .tabs .tab-group-primary .tab:focus-visible {
@@ -313,11 +313,40 @@ body.landing-page {
 }
 
 .tabs .tab-group-jumps {
-  border-top: 0;
-  border-right: 0;
-  border-left: 0;
+  border: 0;
   border-radius: 0;
   background: transparent;
+}
+
+/* Support is a lightweight utility pill rather than another boxed action. */
+.support-menu > summary.topbar-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  height: auto;
+  padding: 6px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: #f2f5f8;
+  color: #334155;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.support-menu > summary.topbar-action:hover,
+.support-menu[open] > summary.topbar-action {
+  border-color: #94a3b8;
+  background: #e7edf3;
+  color: #0f2942;
+}
+
+@media (max-width: 767px) {
+  .support-menu > summary.topbar-action {
+    min-width: 42px;
+    min-height: 42px;
+    padding: 6px 11px;
+  }
 }
 
 /* Workspace tables already use a tabs-aware sticky offset in assets/styles.css. */
