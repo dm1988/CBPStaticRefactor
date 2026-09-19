@@ -38,6 +38,7 @@ Refactored code is in the following html files:
 Page_1.html
 Page_2.html
 Page_3.html
+empty-state.html
 
 # [x] Completed: Refactor foundation setup
 1. Completed: Link CTA buttons for landing page to login page 2
@@ -48,11 +49,11 @@ Page_3.html
 # Landing page
 ## Tasks
 
-### Rename tabs
-Rename tabs: "Bid Lines", "View Trips", "Bid Reserve", "Training Lines", "Review Bids", and add a 6th tab: "Submit Bids"
+### Completed: Rename tabs
+Renamed the workspace tabs to "Bid Lines", "View Trips", "Bid Reserve", "Training Lines", and "Review Bids", and added a functional sixth tab, "Submit Bids".
 
-### Empty state
-Create a new static html for empty state. Should prompt user to upload a bid package. Would Remove all nav items and have a centered hero CTA to upload a bid package. From page 3, in the support dropdown add a link to view the empty state
+### Completed: Empty state
+Created `empty-state.html` without workspace navigation. It presents a centered upload CTA that opens the real Import panel, and the Page 3 Support menu links to the empty-state preview.
 
 ### Completed: Establish static multi-tenancy treatment
 Currently:

@@ -1519,7 +1519,7 @@ function loadWorkspaceNavigationState() {
     const parsed = JSON.parse(safeStorage.get(WORKSPACE_NAV_STORAGE_KEY) || "{}");
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
     return {
-      activeTab: ["lines", "trips", "reserves", "training", "selection", "import"].includes(parsed.activeTab) ? parsed.activeTab : "",
+      activeTab: ["lines", "trips", "reserves", "training", "selection", "submit", "import"].includes(parsed.activeTab) ? parsed.activeTab : "",
       activeViewTarget: SECTION_JUMP_TARGETS.has(parsed.activeViewTarget) ? parsed.activeViewTarget : "",
     };
   } catch {
@@ -10374,7 +10374,7 @@ function scheduleCrewbidsSubmissionVerificationRerender() {
   if (remainingMs <= 0) return;
   state.crewbidsSubmissionVerifyTimer = window.setTimeout(() => {
     state.crewbidsSubmissionVerifyTimer = null;
-    if (state.activeTab === "selection") renderSelection();
+    if (["selection", "submit"].includes(state.activeTab)) renderSelection();
   }, remainingMs + 250);
 }
 
@@ -18314,6 +18314,7 @@ function renderActiveTab() {
   if (state.activeTab === "reserves") renderReserves();
   if (state.activeTab === "training") renderTraining();
   if (state.activeTab === "selection") renderSelection();
+  if (state.activeTab === "submit") renderSelection();
   if (state.activeTab === "preferences") renderPreferences();
   syncSortOptionsForAccess();
   applyAccessLocks();
@@ -18433,7 +18434,7 @@ function updatePageJumpHighlight() {
     clearActiveSectionJumpButton();
     return;
   }
-  if (state.activeTab === "selection") {
+  if (["selection", "submit"].includes(state.activeTab)) {
     clearActiveSectionJumpButton();
     return;
   }
@@ -18968,7 +18969,11 @@ function shouldRunIpadTestReset() {
 function getStartupActiveTab(fallbackTab = state.preferences.defaultTab || "lines") {
   const savedNavigation = loadWorkspaceNavigationState();
   if (savedNavigation.activeViewTarget) state.activeViewTarget = savedNavigation.activeViewTarget;
-  const nextTab = state.startupTabOverride || savedNavigation.activeTab || fallbackTab || "lines";
+  const requestedTab = getWorkspaceParams().get("tab");
+  const supportedTabs = ["lines", "trips", "reserves", "training", "selection", "submit", "import"];
+  const nextTab = supportedTabs.includes(requestedTab)
+    ? requestedTab
+    : state.startupTabOverride || savedNavigation.activeTab || fallbackTab || "lines";
   state.navigationStateReady = true;
   return nextTab === "preferences" ? "lines" : nextTab;
 }

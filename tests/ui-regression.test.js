@@ -9,18 +9,27 @@ const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
 const page1 = read("Page_1.html");
 const page2 = read("Page_2.html");
 const page3 = read("Page_3.html");
+const emptyState = read("empty-state.html");
+const app = read("scripts/app.js");
 const css = `${read("assets/styles.css")}\n${read("css_additions.css")}`;
 
 const primaryGroupMatch = page3.match(
   /<div class=["']tab-group tab-group-primary["'][^>]*>([\s\S]*?)<\/div>/i,
 );
 const primaryGroupMarkup = primaryGroupMatch ? primaryGroupMatch[1] : "";
-const primaryTabs = ["lines", "trips", "reserves", "training", "selection"];
-primaryTabs.forEach((tab) => {
+const primaryTabs = {
+  lines: "Bid Lines",
+  trips: "View Trips",
+  reserves: "Bid Reserve",
+  training: "Training Lines",
+  selection: "Review Bids",
+  submit: "Submit Bids",
+};
+Object.entries(primaryTabs).forEach(([tab, label]) => {
   const panelId = `${tab}Panel`;
   const tabId = `${tab}Tab`;
   assert(
-    new RegExp(`<button[^>]+data-tab=["']${tab}["'][^>]*>`, "i").test(primaryGroupMarkup),
+    new RegExp(`<button[^>]+data-tab=["']${tab}["'][^>]*>${label}<\/button>`, "i").test(primaryGroupMarkup),
     `Missing primary navigation control: ${tab}`,
   );
   assert(
@@ -35,22 +44,30 @@ primaryTabs.forEach((tab) => {
 assert(/tab-group tab-group-primary["'][^>]+role=["']tablist["']/.test(page3),
   "Primary navigation must expose a tablist role");
 
-assert(/\.tabs\s+\.tab-group-primary\s*\{[\s\S]*?grid-template-columns:\s*repeat\(5,/m.test(css),
-  "Primary navigation must include five visible desktop columns");
-assert(/@media\s*\(max-width:\s*1100px\)[\s\S]*?\.tabs\s+\.tab-group-primary[\s\S]*?repeat\(5,/m.test(css),
+assert(/\.tabs\s+\.tab-group-primary\s*\{[\s\S]*?grid-template-columns:\s*repeat\(6,/m.test(css),
+  "Primary navigation must include six desktop columns");
+assert(/@media\s*\(max-width:\s*1100px\)[\s\S]*?\.tabs\s+\.tab-group-primary[\s\S]*?repeat\(3,/m.test(css),
   "Medium viewport navigation regression rule is missing");
-assert(/@media\s*\(max-width:\s*700px\)[\s\S]*?data-tab=["']selection["'][\s\S]*?grid-column:\s*1\s*\/\s*-1/m.test(css),
-  "Bid Selection must remain visible as a full-width mobile primary tab");
+assert(/@media\s*\(max-width:\s*520px\)[\s\S]*?\.tabs\s+\.tab-group-primary[\s\S]*?repeat\(2,/m.test(css),
+  "Phone navigation must use two readable columns");
 assert(!page3.includes("tab-group-jumps"), "Bid Selection must not remain inside the mobile-hidden jump group");
 assert(page3.includes('class="bid-window-status-row"'), "Bid-window status row is missing");
 assert(page3.indexOf('class="workspace-subnav"') < page3.indexOf('class="bid-window-status-row"'),
   "Bid-window status must appear after workspace sub-navigation");
 assert(/\.workspace-page\[data-active-tab=["']selection["']\]\s+\.bid-window-status-row:not\(\[hidden\]\)/.test(css),
   "Bid-window status must be scoped to the active Selection view");
-assert(/document\.body\.dataset\.activeTab\s*=\s*tabName/.test(read("scripts/app.js")),
+assert(/document\.body\.dataset\.activeTab\s*=\s*tabName/.test(app),
   "Tab changes must expose active state for conditional view styling");
-assert(/bidWindowStatusRow\.hidden\s*=\s*tabName\s*!==\s*["']selection["']/.test(read("scripts/app.js")),
+assert(/bidWindowStatusRow\.hidden\s*=\s*tabName\s*!==\s*["']selection["']/.test(app),
   "Tab changes must update bid-window status visibility");
+assert(/supportedTabs\.includes\(requestedTab\)/.test(app) && app.includes('"submit"'),
+  "Workspace deep links and navigation state must support Submit Bids");
+
+assert(!/<nav\b/i.test(emptyState), "Empty state must not render workspace navigation");
+assert(/href=["']Page_3\.html\?tab=import["']/.test(emptyState),
+  "Empty-state CTA must open the workspace Import panel");
+assert(/>Upload bid package<\/a>/i.test(emptyState), "Empty-state upload CTA is missing");
+assert(/href=["']empty-state\.html["']/.test(page3), "Support menu must link to the empty-state preview");
 
 ["--button-primary-bg", "--button-active-bg", "--button-ghost-bg", "--button-ghost-border", "--button-link"].forEach((token) => {
   assert(css.includes(token), `Missing semantic workspace button token: ${token}`);

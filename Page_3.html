@@ -137,6 +137,7 @@
               <button id="faqButton" type="button" class="topbar-menu-item">FAQ</button>
               <button id="messagesButton" type="button" class="topbar-menu-item message-button" hidden>Messages</button>
               <button id="contactButton" type="button" class="topbar-menu-item">Contact Developer</button>
+              <a href="empty-state.html" class="topbar-menu-item topbar-menu-link">View Empty State</a>
             </div>
           </details>
         </div>
@@ -170,11 +171,12 @@
 
     <nav class="tabs" aria-label="Bid views and selection">
       <div class="tab-group tab-group-primary" role="tablist" aria-label="Bid views">
-        <button id="linesTab" class="tab is-active" type="button" role="tab" data-tab="lines" aria-selected="true" aria-controls="linesPanel" tabindex="0">Lines</button>
-        <button id="tripsTab" class="tab" type="button" role="tab" data-tab="trips" aria-selected="false" aria-controls="tripsPanel" tabindex="-1">Trips</button>
-        <button id="reservesTab" class="tab" type="button" role="tab" data-tab="reserves" aria-selected="false" aria-controls="reservesPanel" tabindex="-1">Reserve</button>
-        <button id="trainingTab" class="tab" type="button" role="tab" data-tab="training" aria-selected="false" aria-controls="trainingPanel" tabindex="-1">Training</button>
-        <button id="selectionTab" class="tab" type="button" role="tab" data-tab="selection" aria-selected="false" aria-controls="selectionPanel" tabindex="-1">Bid Selection</button>
+        <button id="linesTab" class="tab is-active" type="button" role="tab" data-tab="lines" aria-selected="true" aria-controls="linesPanel" tabindex="0">Bid Lines</button>
+        <button id="tripsTab" class="tab" type="button" role="tab" data-tab="trips" aria-selected="false" aria-controls="tripsPanel" tabindex="-1">View Trips</button>
+        <button id="reservesTab" class="tab" type="button" role="tab" data-tab="reserves" aria-selected="false" aria-controls="reservesPanel" tabindex="-1">Bid Reserve</button>
+        <button id="trainingTab" class="tab" type="button" role="tab" data-tab="training" aria-selected="false" aria-controls="trainingPanel" tabindex="-1">Training Lines</button>
+        <button id="selectionTab" class="tab" type="button" role="tab" data-tab="selection" aria-selected="false" aria-controls="selectionPanel" tabindex="-1">Review Bids</button>
+        <button id="submitTab" class="tab" type="button" role="tab" data-tab="submit" aria-selected="false" aria-controls="submitPanel" tabindex="-1">Submit Bids</button>
       </div>
     </nav>
 
@@ -1251,8 +1253,8 @@
         <section id="selectionOfficialWorkflow" class="selection-official-workflow" aria-labelledby="selectionOfficialWorkflowTitle">
           <header class="selection-workflow-header">
             <p class="eyebrow">Official workflow</p>
-            <h2 id="selectionOfficialWorkflowTitle">Review and submit your bid</h2>
-            <p>Prepare CrewBids tools, verify the complete official order, then open the final confirmation.</p>
+            <h2 id="selectionOfficialWorkflowTitle">Review your bid</h2>
+            <p>Prepare CrewBids tools and verify the complete official order before moving to Submit Bids.</p>
           </header>
 
           <div class="selection-prepare-grid">
@@ -1377,7 +1379,16 @@
             </details>
           </section>
 
-          <section class="selection-workflow-card selection-submit-card" aria-labelledby="selectionSubmitTitle">
+        </section>
+      </section>
+
+      <section class="panel submit-panel" id="submitPanel" role="tabpanel" aria-labelledby="submitTab" tabindex="0" hidden>
+        <header class="selection-workflow-header submit-panel-header">
+          <p class="eyebrow">Official workflow</p>
+          <h2>Submit Bids</h2>
+          <p>Confirm readiness, review the final status, and open the official CrewBids submission.</p>
+        </header>
+        <section class="selection-workflow-card selection-submit-card" aria-labelledby="selectionSubmitTitle">
             <div class="selection-submit-copy">
               <p class="eyebrow">Submit</p>
               <h3 id="selectionSubmitTitle">Send a new official bid</h3>
@@ -1399,7 +1410,6 @@
               </div>
               <button id="clearSelectionBidList" type="button" class="selection-clear-draft">Clear draft</button>
             </div>
-          </section>
         </section>
       </section>
 
