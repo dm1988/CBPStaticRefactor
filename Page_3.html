@@ -163,22 +163,19 @@
     </header>
 
     <nav class="tabs" aria-label="Bid sections and page jumps">
-      <div class="tab-group tab-group-home" aria-label="Home">
-        <button class="tab tab-jump" data-view-target="home">Home</button>
-        <section class="current-dataset-banner is-verifying" aria-live="polite">
-          <p id="currentDatasetBanner">Standby. Verifying your workspace.</p>
-        </section>
-        <button class="tab" data-tab="import">Import</button>
-        <span id="importAttentionHint" class="visually-hidden">Select Import to load a bid package.</span>
-      </div>
-      <span class="tab-divider" aria-hidden="true"></span>
       <div class="tab-group tab-group-primary" aria-label="Bid views">
         <button class="tab is-active" data-tab="lines">Lines</button>
         <button class="tab" data-tab="trips">Trips</button>
         <button class="tab" data-tab="reserves">Reserve</button>
         <button class="tab" data-tab="training">Training</button>
       </div>
-      <span class="tab-divider" aria-hidden="true"></span>
+      <div class="tab-group tab-group-context" aria-label="Bid package">
+        <section class="current-dataset-banner is-verifying" aria-live="polite">
+          <p id="currentDatasetBanner">Standby. Verifying your workspace.</p>
+        </section>
+        <button class="tab" data-tab="import">Import</button>
+        <span id="importAttentionHint" class="visually-hidden">Select Import to load a bid package.</span>
+      </div>
       <div class="tab-group tab-group-jumps" aria-label="Page jumps">
         <span class="tab-jump-buttons">
           <button class="tab tab-jump" data-view-target="calendar">Calendar</button>

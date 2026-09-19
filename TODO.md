@@ -166,7 +166,7 @@ Completed: Spacing: A consistent 12px gap separates the two items.
   - Trips
   - Reserve
   - Training
-- Completed: Consolidated Home, package status, Import, Lines, Trips, Reserve, and Training into a responsive primary workflow navigation bar.
+- Completed: Consolidated Lines, Trips, Reserve, Training, package status, and Import into a responsive workflow navigation bar with the primary views leading.
 - Completed: Replaced the boxed Lines, Trips, Reserve, and Training buttons with minimalist underline tabs and flattened the secondary navigation container.
 - Completed: Refined the navigation typography, removed the remaining Jump-group border, and restyled Support as a compact utility pill with a mobile-safe touch target.
 
@@ -186,7 +186,7 @@ Completed: Spacing: A consistent 12px gap separates the two items.
 * Completed: **Sticky Table Headers:** Table headers use the workspace navigation offset and remain visible while scrolling long line lists.
 * **Sticky Quick Filters:** Keep the quick-filter bar visible without obscuring table headers on shorter viewports.
 
-### Completed: Home button returns to Lines and scrolls to the workspace top
+### Completed: Removed the redundant Home control and its divider so the primary bid views lead the navigation
 
 ## UI/UX Optimization: CrewBidPro Workspace
 
