@@ -671,13 +671,13 @@ body.theme-dark .topbar-menu-panel {
   }
 }
 
-/* Primary workflow navigation: Home → package → Import → bid views. */
+/* Primary bid views lead the navigation; dataset context sits below it. */
 .tabs {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) max-content;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-areas:
-    "workflow views"
-    "secondary secondary";
+    "views"
+    "secondary";
   gap: 8px 12px;
   align-items: center;
 }
@@ -686,21 +686,12 @@ body.theme-dark .topbar-menu-panel {
   display: none;
 }
 
-.tabs .tab-group-home {
-  grid-area: workflow;
-  display: grid;
-  grid-template-columns: auto minmax(180px, 1fr) auto;
-  gap: 7px;
-  width: 100%;
-  min-width: 0;
-}
-
 .tabs .tab-group-primary {
   grid-area: views;
   display: grid;
   grid-template-columns: repeat(4, minmax(76px, auto));
   gap: 7px;
-  justify-self: end;
+  justify-self: start;
   min-width: 0;
 }
 
@@ -710,21 +701,6 @@ body.theme-dark .topbar-menu-panel {
   min-width: 0;
 }
 
-.tabs .current-dataset-banner {
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
-  max-width: none;
-}
-
-.tabs .current-dataset-banner p {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.tabs .tab-group-home > .tab,
 .tabs .tab-group-primary > .tab {
   min-height: 44px;
 }
@@ -733,7 +709,6 @@ body.theme-dark .topbar-menu-panel {
   .tabs {
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
-      "workflow"
       "views"
       "secondary";
   }
@@ -751,19 +726,70 @@ body.theme-dark .topbar-menu-panel {
 }
 
 @media (max-width: 520px) {
-  .tabs .tab-group-home {
-    grid-template-columns: 68px minmax(0, 1fr) 68px;
-  }
-
-  .tabs .tab-group-home > .tab:is([data-view-target="home"], [data-tab="import"]) {
-    width: 68px;
-    min-width: 0;
-    padding-inline: 5px;
-    font-size: 13px;
-  }
-
   .tabs .tab-group-primary > .tab {
     padding-inline: 4px;
     font-size: clamp(12px, 3.6vw, 15px);
+  }
+}
+
+/* Full-width dataset status with its related Import action. */
+.dataset-status-bar.current-dataset-banner {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  height: auto;
+  min-height: 48px;
+  max-height: none;
+  margin: 0;
+  padding: 6px clamp(16px, 4vw, 48px);
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--band) 78%, var(--surface));
+}
+
+.dataset-status-bar.current-dataset-banner p {
+  min-width: 0;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dataset-status-bar .dataset-import-action {
+  min-width: 86px;
+  min-height: 34px;
+  padding: 6px 16px;
+  border-color: var(--accent);
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 750;
+}
+
+.dataset-status-bar .dataset-import-action:hover,
+.dataset-status-bar .dataset-import-action:focus-visible,
+.dataset-status-bar .dataset-import-action.is-active,
+.dataset-status-bar .dataset-import-action.is-import-attention {
+  border-color: var(--accent-strong);
+  background: var(--accent-strong);
+  color: var(--on-accent);
+}
+
+@media (max-width: 520px) {
+  .dataset-status-bar.current-dataset-banner {
+    gap: 8px;
+    padding-inline: 12px;
+  }
+
+  .dataset-status-bar .dataset-import-action {
+    min-width: 68px;
+    padding-inline: 10px;
+    font-size: 13px;
   }
 }

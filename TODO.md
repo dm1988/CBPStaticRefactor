@@ -1,4 +1,4 @@
-# [ ] CRITICAL: Eliminate DOM-based XSS vulnerabilities
+# [x] CRITICAL: Eliminate DOM-based XSS vulnerabilities
 
 `scripts/app.js` builds HTML with `innerHTML` in multiple places using values from uploaded bid documents, API responses, browser storage, and application state. Several values are not HTML-escaped before insertion, including summary metrics, airport and region labels, bid/line names, element attributes, selection chips, and modal content. A malicious or corrupted upload or API response could therefore inject markup or JavaScript into the workspace.
 
@@ -13,7 +13,7 @@ Required remediation:
 
 Known high-risk locations include `renderSummary`, `renderAirportAvoidButtons`, `renderBidListPanel`, `renderSelection`, `openSupportModal`, `showHoverPopup`, and profile-avatar rendering in `scripts/app.js`.
 
-## Investigate schedule uploading payloads
+## [x] Investigate schedule uploading payloads
 Investivate upload validation, rate limits, size limits
 
 How does the schedule import work?
@@ -166,7 +166,7 @@ Completed: Spacing: A consistent 12px gap separates the two items.
   - Trips
   - Reserve
   - Training
-- Completed: Consolidated Lines, Trips, Reserve, Training, package status, and Import into a responsive workflow navigation bar with the primary views leading.
+- Completed: Lines, Trips, Reserve, and Training lead the responsive navigation; package status now uses a full-width strip below it with Import grouped at the far right.
 - Completed: Replaced the boxed Lines, Trips, Reserve, and Training buttons with minimalist underline tabs and flattened the secondary navigation container.
 - Completed: Refined the navigation typography, removed the remaining Jump-group border, and restyled Support as a compact utility pill with a mobile-safe touch target.
 

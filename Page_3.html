@@ -169,13 +169,6 @@
         <button class="tab" data-tab="reserves">Reserve</button>
         <button class="tab" data-tab="training">Training</button>
       </div>
-      <div class="tab-group tab-group-context" aria-label="Bid package">
-        <section class="current-dataset-banner is-verifying" aria-live="polite">
-          <p id="currentDatasetBanner">Standby. Verifying your workspace.</p>
-        </section>
-        <button class="tab" data-tab="import">Import</button>
-        <span id="importAttentionHint" class="visually-hidden">Select Import to load a bid package.</span>
-      </div>
       <div class="tab-group tab-group-jumps" aria-label="Page jumps">
         <span class="tab-jump-buttons">
           <button class="tab tab-jump" data-view-target="calendar">Calendar</button>
@@ -188,6 +181,12 @@
         <button class="tab" data-tab="selection">Bid Selection</button>
       </div>
     </nav>
+
+    <section class="current-dataset-banner dataset-status-bar is-verifying" aria-label="Current bid package" aria-live="polite">
+      <p id="currentDatasetBanner">Standby. Verifying your workspace.</p>
+      <button class="tab dataset-import-action" data-tab="import">Import</button>
+      <span id="importAttentionHint" class="visually-hidden">Select Import to load a bid package.</span>
+    </section>
 
     <div id="newUserSplashModal" class="new-user-splash-modal" hidden>
       <div class="new-user-splash-backdrop" data-close-new-user-splash></div>
