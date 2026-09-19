@@ -47,6 +47,13 @@ Page_3.html
 
 # Landing page
 ## Tasks
+
+### Rename tabs
+Rename tabs: "Bid Lines", "View Trips", "Bid Reserve", "Training Lines", "Review Bids", and add a 6th tab: "Submit Bids"
+
+### Empty state
+Create a new static html for empty state. Should prompt user to upload a bid package. Would Remove all nav items and have a centered hero CTA to upload a bid package. From page 3, in the support dropdown add a link to view the empty state
+
 ### Completed: Establish static multi-tenancy treatment
 Currently:
 The airline selection is a vertical stack where several airlines are marked as "Service not currently available."

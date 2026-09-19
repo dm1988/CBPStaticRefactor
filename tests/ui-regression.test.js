@@ -52,6 +52,38 @@ assert(/document\.body\.dataset\.activeTab\s*=\s*tabName/.test(read("scripts/app
 assert(/bidWindowStatusRow\.hidden\s*=\s*tabName\s*!==\s*["']selection["']/.test(read("scripts/app.js")),
   "Tab changes must update bid-window status visibility");
 
+["--button-primary-bg", "--button-active-bg", "--button-ghost-bg", "--button-ghost-border", "--button-link"].forEach((token) => {
+  assert(css.includes(token), `Missing semantic workspace button token: ${token}`);
+});
+assert(/--button-active-bg:\s*#005f87/i.test(css), "Active workspace controls must use the brand mid-blue");
+assert(/--button-ghost-bg:\s*#f8fafc/i.test(css), "Light-theme ghost controls must use a neutral background");
+assert(/\.lines-panel-navigation-button[\s\S]*?var\(--button-ghost-bg\)/m.test(css),
+  "Panel navigation buttons must use the shared ghost palette");
+assert(/\.line-show-help-button,\s*\.fatigue-help-link\)[\s\S]*?color:\s*var\(--button-link\)/m.test(css),
+  "Help controls must use the accessible button-link color");
+
+const relativeLuminance = (hex) => {
+  const channels = hex.match(/[a-f\d]{2}/gi).map((channel) => parseInt(channel, 16) / 255);
+  const linear = channels.map((channel) => (
+    channel <= 0.03928 ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4)
+  ));
+  return (0.2126 * linear[0]) + (0.7152 * linear[1]) + (0.0722 * linear[2]);
+};
+const contrastRatio = (foreground, background) => {
+  const foregroundLuminance = relativeLuminance(foreground);
+  const backgroundLuminance = relativeLuminance(background);
+  return (Math.max(foregroundLuminance, backgroundLuminance) + 0.05)
+    / (Math.min(foregroundLuminance, backgroundLuminance) + 0.05);
+};
+[
+  ["005f87", "ffffff", "brand blue on white"],
+  ["005f87", "f8fafc", "brand link on ghost background"],
+  ["101c29", "f8fafc", "light-theme ghost button"],
+  ["eef6fb", "172839", "dark-theme ghost button"],
+].forEach(([foreground, background, label]) => {
+  assert(contrastRatio(foreground, background) >= 4.5, `${label} must meet WCAG AA text contrast`);
+});
+
 ["calendar", "filters", "results"].forEach((target) => {
   assert(page3.includes(`data-view-target="${target}"`), `Missing sub-navigation target: ${target}`);
 });

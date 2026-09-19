@@ -1032,3 +1032,142 @@ body.theme-dark .topbar-menu-panel {
   letter-spacing: normal;
   text-transform: none;
 }
+
+/* Workspace button palette: consistent primary, active, ghost, and help states. */
+body.workspace-page {
+  --button-primary-bg: #071a2f;
+  --button-primary-hover: #0b2743;
+  --button-primary-text: #ffffff;
+  --button-active-bg: #005f87;
+  --button-active-hover: #004b6b;
+  --button-active-text: #ffffff;
+  --button-ghost-bg: #f8fafc;
+  --button-ghost-hover: #f1f5f9;
+  --button-ghost-border: #e2e8f0;
+  --button-ghost-text: #101c29;
+  --button-link: #005f87;
+  --button-focus-ring: rgba(0, 95, 135, 0.32);
+}
+
+body.workspace-page.theme-dark {
+  --button-primary-bg: #005f87;
+  --button-primary-hover: #004b6b;
+  --button-primary-text: #ffffff;
+  --button-active-bg: #005f87;
+  --button-active-hover: #004b6b;
+  --button-active-text: #ffffff;
+  --button-ghost-bg: #172839;
+  --button-ghost-hover: #20364a;
+  --button-ghost-border: #40566a;
+  --button-ghost-text: #eef6fb;
+  --button-link: #9edff2;
+  --button-focus-ring: rgba(52, 214, 255, 0.38);
+}
+
+body.workspace-page :is(
+  .btn-primary:not(.reset-lines-btn, .reset-cities-btn),
+  .dataset-status-bar .dataset-import-action,
+  .workspace-jump-fab.lines-panel-navigation-toggle,
+  .lines-panel-navigation.is-open .workspace-jump-fab.lines-panel-navigation-toggle
+) {
+  border-color: var(--button-primary-bg);
+  background: var(--button-primary-bg);
+  color: var(--button-primary-text);
+}
+
+body.workspace-page :is(
+  .btn-primary:not(.reset-lines-btn, .reset-cities-btn),
+  .dataset-status-bar .dataset-import-action,
+  .workspace-jump-fab.lines-panel-navigation-toggle,
+  .lines-panel-navigation.is-open .workspace-jump-fab.lines-panel-navigation-toggle
+):hover:not(:disabled) {
+  border-color: var(--button-primary-hover);
+  background: var(--button-primary-hover);
+  color: var(--button-primary-text);
+}
+
+body.workspace-page :is(
+  .btn-secondary:not(.package-remove-action),
+  .accordion-toggle,
+  #clearAvoidDays,
+  .reset-lines-btn,
+  .reset-cities-btn,
+  .workspace-subnav .tab-jump,
+  .lines-panel-navigation-button,
+  .lines-panel-navigation-close,
+  .line-show-help-button
+) {
+  border-color: var(--button-ghost-border);
+  background: var(--button-ghost-bg);
+  color: var(--button-ghost-text);
+}
+
+body.workspace-page :is(
+  .btn-secondary:not(.package-remove-action),
+  .accordion-toggle,
+  #clearAvoidDays,
+  .reset-lines-btn,
+  .reset-cities-btn,
+  .workspace-subnav .tab-jump,
+  .lines-panel-navigation-button,
+  .lines-panel-navigation-close,
+  .line-show-help-button
+):hover:not(:disabled) {
+  border-color: var(--button-ghost-border);
+  background: var(--button-ghost-hover);
+  color: var(--button-ghost-text);
+}
+
+body.workspace-page :is(
+  .btn-secondary.is-active,
+  .btn-secondary[aria-pressed="true"],
+  .workspace-subnav .tab-jump.is-jump-active,
+  .lines-panel-navigation-button.is-active,
+  .lines-panel-navigation-button[aria-current="location"]
+) {
+  border-color: var(--button-active-bg);
+  background: var(--button-active-bg);
+  color: var(--button-active-text);
+}
+
+body.workspace-page :is(
+  .btn-secondary.is-active,
+  .btn-secondary[aria-pressed="true"],
+  .workspace-subnav .tab-jump.is-jump-active,
+  .lines-panel-navigation-button.is-active,
+  .lines-panel-navigation-button[aria-current="location"]
+):hover:not(:disabled) {
+  border-color: var(--button-active-hover);
+  background: var(--button-active-hover);
+  color: var(--button-active-text);
+}
+
+body.workspace-page .tabs .tab-group-primary .tab:is(.is-active, :hover, :focus-visible),
+body.workspace-page :is(.line-show-help-button, .fatigue-help-link) {
+  color: var(--button-link);
+}
+
+body.workspace-page .tabs .tab-group-primary .tab.is-active {
+  border-bottom-color: var(--button-link);
+}
+
+body.workspace-page :is(
+  .btn-primary,
+  .btn-secondary,
+  .accordion-toggle,
+  .dataset-import-action,
+  .workspace-subnav .tab-jump,
+  .lines-panel-navigation-toggle,
+  .lines-panel-navigation-button,
+  .lines-panel-navigation-close,
+  .line-show-help-button,
+  .fatigue-help-link
+):focus-visible {
+  outline: 3px solid var(--button-focus-ring);
+  outline-offset: 2px;
+}
+
+body.workspace-page :is(.btn-primary, .btn-secondary, .lines-panel-navigation-button):disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
