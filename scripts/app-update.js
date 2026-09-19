@@ -35,13 +35,7 @@
   }
 
   async function loadVersionInfo() {
-    try {
-      const response = await fetch(`/version.json?t=${Date.now()}`, { cache: "no-store" });
-      const payload = await response.json();
-      if (response.ok && payload?.version) return payload;
-    } catch (error) {
-      console.warn("Last app update unavailable:", error.message);
-    }
+
     return { version: FALLBACK_VERSION, updatedAt: FALLBACK_UPDATED_AT, changes: [] };
   }
 

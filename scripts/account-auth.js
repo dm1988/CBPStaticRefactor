@@ -7,9 +7,9 @@ const ACCOUNT_LAST_ONLINE_AUTH_STORAGE_KEY = "crewbidpro.lastOnlineAuthAt";
 const CONFIRM_ACCOUNT_URL = "confirm-account.html";
 const CHANGE_PASSWORD_URL = "change-password.html";
 const CREWBIDPRO_WORK_EMAIL_DOMAIN = "@kalittaair.com";
-const WORKSPACE_URL = "workspace.html";
-const FIRST_TIME_WORKSPACE_URL = "workspace.html?firstTime=1";
-const PROFILE_CHECK_WORKSPACE_URL = "workspace.html?profileCheck=1";
+const WORKSPACE_URL = "Page_3.html";
+const FIRST_TIME_WORKSPACE_URL = "Page_3.html?firstTime=1";
+const PROFILE_CHECK_WORKSPACE_URL = "Page_3.html?profileCheck=1";
 const OTP_TOKEN_PATTERN = /^\d{4,10}$/;
 const ACCOUNT_AUTH_TIMEOUT_MS = 8000;
 const ACCOUNT_CODE_RESEND_COOLDOWN_SECONDS = 120;
@@ -154,7 +154,12 @@ function getPostLoginWorkspaceUrl() {
     ) {
       return `${nextUrl.pathname.split("/").pop() || "admin"}${nextUrl.search}`;
     }
-    if (!nextUrl.pathname.endsWith("/workspace.html") && !nextUrl.pathname.endsWith("workspace.html")) {
+    if (
+      !nextUrl.pathname.endsWith("/workspace.html") &&
+      !nextUrl.pathname.endsWith("workspace.html") &&
+      !nextUrl.pathname.endsWith("/Page_3.html") &&
+      !nextUrl.pathname.endsWith("Page_3.html")
+    ) {
       return PROFILE_CHECK_WORKSPACE_URL;
     }
     if (!nextUrl.searchParams.has("profileCheck")) {
@@ -400,6 +405,10 @@ async function handleLogin() {
       if (error) throw error;
 
       rememberSignedInUser(data.user);
+      if (!data.user?.email_confirmed_at && !data.user?.confirmed_at) {
+        setAccountStatus("Verify your email before opening the workspace.", "warning");
+        return;
+      }
       await syncProfile(data.user);
       if (userMustChangePassword(data.user)) {
         setAccountStatus("Temporary password accepted. Choose a new password to continue.", "success");
@@ -461,6 +470,16 @@ function handleAccountSupport() {
     toggle.hidden = false;
   });
 
+  const interestRequest = new URLSearchParams(window.location.search).get("airlineInterest") === "1";
+  if (interestRequest) {
+    form.hidden = false;
+    toggle.hidden = true;
+    const intro = form.querySelector(".account-copy");
+    if (intro) intro.textContent = "Tell us who you are and which airline you want CrewBidPro to support. We will notify you when access becomes available.";
+    form.dataset.interestSource = "landing_waitlist";
+    window.setTimeout(() => nameInput?.focus(), 0);
+  }
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const name = nameInput.value.trim();
@@ -478,7 +497,7 @@ function handleAccountSupport() {
           contact_name: name,
           email,
           airline,
-          source: "login_help",
+          source: form.dataset.interestSource || "login_help",
         });
       if (error) throw error;
 
@@ -1077,7 +1096,6 @@ async function handleRequiredPasswordChange() {
 
 async function hydrateAccountSummary() {
   const emailDisplay = $("currentAccountEmail");
-  if (!emailDisplay) return;
   const signOutButton = $("signOutButton");
   const loginForm = $("loginForm");
   const signedInActions = $("signedInAccountActions");
@@ -1088,7 +1106,7 @@ async function hydrateAccountSummary() {
     if (signOutButton) signOutButton.hidden = true;
     if (loginForm) loginForm.hidden = false;
     if (signedInActions) signedInActions.hidden = true;
-    emailDisplay.textContent = "Not signed in";
+    if (emailDisplay) emailDisplay.textContent = "Not signed in";
     return;
   }
 
@@ -1102,10 +1120,20 @@ async function hydrateAccountSummary() {
     if (error) throw error;
     if (data?.user) {
       rememberSignedInUser(data.user);
-      emailDisplay.textContent = data.user.email || "Signed in";
-      if (signOutButton) signOutButton.hidden = false;
-      if (loginForm) loginForm.hidden = true;
-      if (signedInActions) signedInActions.hidden = false;
+      if (emailDisplay) emailDisplay.textContent = data.user.email || "Signed in";
+      const emailVerified = Boolean(data.user.email_confirmed_at || data.user.confirmed_at);
+      if (!emailVerified) {
+        if (signOutButton) signOutButton.hidden = true;
+        if (loginForm) loginForm.hidden = false;
+        if (signedInActions) signedInActions.hidden = true;
+        setAccountStatus("Verify your email before opening the workspace.", "warning");
+        return;
+      }
+      if (userMustChangePassword(data.user)) {
+        window.location.replace(getChangePasswordUrl(PROFILE_CHECK_WORKSPACE_URL));
+        return;
+      }
+      window.location.replace(PROFILE_CHECK_WORKSPACE_URL);
       return;
     }
   } catch (error) {
@@ -1115,13 +1143,13 @@ async function hydrateAccountSummary() {
       if (signOutButton) signOutButton.hidden = true;
       if (loginForm) loginForm.hidden = false;
       if (signedInActions) signedInActions.hidden = true;
-      emailDisplay.textContent = "Not signed in";
+      if (emailDisplay) emailDisplay.textContent = "Not signed in";
       return;
     }
     if (signOutButton) signOutButton.hidden = true;
     if (loginForm) loginForm.hidden = false;
     if (signedInActions) signedInActions.hidden = true;
-    emailDisplay.textContent = "Verification delayed";
+    if (emailDisplay) emailDisplay.textContent = "Verification delayed";
     setAccountStatus(humanizeAccountAuthError(error), "warning");
     return;
   }
@@ -1130,7 +1158,7 @@ async function hydrateAccountSummary() {
   if (signOutButton) signOutButton.hidden = true;
   if (loginForm) loginForm.hidden = false;
   if (signedInActions) signedInActions.hidden = true;
-  emailDisplay.textContent = "Not signed in";
+  if (emailDisplay) emailDisplay.textContent = "Not signed in";
 }
 
 if (!redirectRootAuthCallback()) {

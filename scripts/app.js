@@ -2934,8 +2934,7 @@ async function restoreBidSelectionForCurrentPackage(data = state.data) {
     }
     saveLegacyBidList();
     if (state.bidList.length && navigator.onLine !== false) {
-      refreshCrewbidsMonitoringState()
-        .catch((error) => console.warn("CrewBids monitoring refresh after bid selection restore failed:", error.message));
+        // .catch((error) => console.warn("CrewBids monitoring refresh after bid selection restore failed:", error.message));
     }
     return true;
   } catch (error) {
@@ -3770,13 +3769,22 @@ const validateWorkEmail = (value) => (
 
 const updateStickyOffsets = () => {
   const tabs = document.querySelector(".tabs");
-  const offset = tabs ? `${Math.ceil(tabs.getBoundingClientRect().height)}px` : "0px";
-  document.documentElement.style.setProperty("--tabs-offset", offset);
+  const subnav = document.querySelector(".workspace-subnav");
+  const quickFilters = document.querySelector(".panel.is-active .result-header");
+  const tabsHeight = Math.ceil(tabs?.getBoundingClientRect().height || 0);
+  const subnavHeight = Math.ceil(subnav?.getBoundingClientRect().height || 0);
+  const quickFilterHeight = Math.ceil(quickFilters?.getBoundingClientRect().height || 0);
+  document.documentElement.style.setProperty("--primary-tabs-offset", `${tabsHeight}px`);
+  document.documentElement.style.setProperty("--tabs-offset", `${tabsHeight + subnavHeight}px`);
+  document.documentElement.style.setProperty("--quick-filter-height", `${quickFilterHeight}px`);
 };
 
 const getTabsOffset = () => {
   const tabs = document.querySelector(".tabs");
-  return Math.ceil(tabs?.getBoundingClientRect().height || 0) + 12;
+  const subnav = document.querySelector(".workspace-subnav");
+  const tabsHeight = Math.ceil(tabs?.getBoundingClientRect().height || 0);
+  const subnavHeight = Math.ceil(subnav?.getBoundingClientRect().height || 0);
+  return tabsHeight + subnavHeight + 12;
 };
 
 const scrollElementBelowTabs = (element, behavior = "smooth") => {
@@ -6937,26 +6945,46 @@ const renderReserveSchedulePopup = (reserve, allowedStatuses = []) => {
 
 function renderSummary() {
   if (!state.data.lines.length && !state.data.trips.length && !state.data.reserves.length) {
-    $("summaryGrid").innerHTML = "";
+    $("summaryGrid").replaceChildren();
     return;
   }
-  const { summary, metadata } = state.data;
+  const { summary } = state.data;
   const reserveLineCount = getReserveOnlyLines().length;
   const metrics = [
-    ["Flying lines", summary.lineCount],
-    ["Reserve lines", reserveLineCount],
-    ["Trips", summary.tripCount],
-    ["Line credit range", `${summary.lineCredit?.minLabel || ""} - ${summary.lineCredit?.maxLabel || ""}`],
-    ["Top airport", summary.topAirports?.[0]?.[0] || ""],
-    ["Top leg", summary.topLegs?.[0]?.[0] || ""],
+    { label: "Flying lines", value: summary.lineCount, tab: "lines" },
+    { label: "Reserve lines", value: reserveLineCount, tab: "reserves" },
+    { label: "Trips", value: summary.tripCount, tab: "trips" },
+    { label: "Line credit range", value: `${summary.lineCredit?.minLabel || ""} - ${summary.lineCredit?.maxLabel || ""}` },
+    { label: "Top airport", value: summary.topAirports?.[0]?.[0] || "" },
+    { label: "Top leg", value: summary.topLegs?.[0]?.[0] || "" },
   ];
 
-  $("summaryGrid").innerHTML = metrics.map(([label, value]) => `
-    <article class="metric">
-      <div class="label">${label}</div>
-      <div class="value">${value}</div>
-    </article>
-  `).join("");
+  const summaryGrid = $("summaryGrid");
+  const fragment = document.createDocumentFragment();
+  metrics.forEach(({ label, value, tab }) => {
+    const metric = document.createElement(tab ? "button" : "article");
+    metric.className = `metric${tab ? " metric-action" : ""}`;
+    if (tab) {
+      metric.type = "button";
+      metric.dataset.summaryTab = tab;
+      metric.setAttribute("aria-label", `Open ${label}`);
+    }
+    const labelElement = document.createElement("div");
+    labelElement.className = "label";
+    labelElement.textContent = label;
+    const valueElement = document.createElement("div");
+    valueElement.className = "value";
+    valueElement.textContent = String(value ?? "");
+    metric.append(labelElement, valueElement);
+    fragment.append(metric);
+  });
+  summaryGrid.replaceChildren(fragment);
+  summaryGrid.querySelectorAll("[data-summary-tab]").forEach((metric) => {
+    metric.addEventListener("click", () => {
+      setActiveTab(metric.dataset.summaryTab, { userInitiated: true });
+      requestAnimationFrame(() => scrollElementBelowTabs(getResultAnchor()));
+    });
+  });
 }
 
 const generateDateRange = (start, end) => {
@@ -7236,6 +7264,36 @@ function setupAccordions() {
       updateStickyOffsets();
       schedulePageJumpHighlightUpdate();
       scheduleLinePanelNavigationHighlight();
+    });
+  });
+
+  document.querySelectorAll(".filter-cluster").forEach((cluster, index) => {
+    const heading = cluster.querySelector(":scope > h3");
+    const controls = cluster.querySelector(":scope > .filter-cluster-controls");
+    if (!heading || !controls || heading.querySelector(".filter-cluster-toggle")) return;
+    if (!controls.id) controls.id = `filterClusterControls${index + 1}`;
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "filter-cluster-toggle";
+    button.setAttribute("aria-expanded", "true");
+    button.setAttribute("aria-controls", controls.id);
+
+    const label = document.createElement("span");
+    label.textContent = heading.textContent.trim();
+    const chevron = document.createElement("span");
+    chevron.className = "filter-cluster-chevron";
+    chevron.setAttribute("aria-hidden", "true");
+    button.append(label, chevron);
+    heading.replaceChildren(button);
+
+    button.addEventListener("click", () => {
+      const expanded = button.getAttribute("aria-expanded") === "true";
+      button.setAttribute("aria-expanded", String(!expanded));
+      controls.hidden = expanded;
+      cluster.classList.toggle("is-collapsed", expanded);
+      updateStickyOffsets();
+      schedulePageJumpHighlightUpdate();
     });
   });
 }
@@ -12990,63 +13048,8 @@ function renderCrewbidsMonitoringPanel() {
 }
 
 async function refreshCrewbidsMonitoringState() {
-  if (state.crewbidsMonitorRefreshInFlight || navigator.onLine === false) return;
-  const panel = $("crewbidsMonitorTitle")?.closest(".crewbids-monitor-panel, .crewbids-profile-access-card");
-  if (!panel) return;
-  state.crewbidsMonitorRefreshInFlight = true;
-  k4ConnectionStatusConfirmed = false;
-  state.crewbidsCredentialLoadError = "";
-  renderCrewbidsMonitoringPanel();
-  try {
-    // Saved access is foundational UI state. Resolve and render it separately
-    // so an optional monitoring/alert request cannot leave Workspace showing
-    // the initial missing-access placeholder after the credential succeeds.
-    const credentialPayload = await crewbidsApiFetch("/api/crewbids/credential");
-    const nextCredential = credentialPayload.credential || { configured: false, status: "missing" };
-    const searchAccessChanged = hasCrewbidsBidsPlacedSearchAccessChanged(state.crewbidsCredential, nextCredential);
-    state.crewbidsCredential = nextCredential;
-    k4ConnectionStatusConfirmed = Boolean(credentialPayload.credential);
-    state.crewbidsCredentialLoadError = "";
-    if (searchAccessChanged) refreshOpenCrewbidsBidsPlacedSearchModal();
-    renderCrewbidsMonitoringPanel();
+  state.crewbidsMonitorRefreshInFlight = false;
 
-    if (isOhioOnboardingFixtureMode()) {
-      state.crewbidsMonitors = [];
-      state.crewbidsAlerts = [];
-      state.crewbidsBidAvoidRules = [];
-      state.crewbidsBuddyBidRules = [];
-      return;
-    }
-
-    const [monitorsPayload, alertsPayload, bidAvoidPayload, buddyBidPayload] = await Promise.all([
-      crewbidsApiFetch("/api/crewbids/monitors"),
-      crewbidsApiFetch("/api/crewbids/alerts"),
-      crewbidsApiFetch("/api/crewbids/bid-avoid").catch(() => ({ rules: [] })),
-      crewbidsApiFetch("/api/crewbids/buddy-bid").catch(() => ({ rules: [] })),
-    ]);
-    state.crewbidsMonitors = monitorsPayload.monitors || [];
-    state.crewbidsAlerts = alertsPayload.alerts || [];
-    state.crewbidsBidAvoidRules = bidAvoidPayload.rules || [];
-    state.crewbidsBidAvoidRequiresResolution = Boolean(bidAvoidPayload.requiresResolution);
-    state.crewbidsBidAvoidMigrationMessage = bidAvoidPayload.migrationMessage || "";
-    state.crewbidsBuddyBidRules = buddyBidPayload.rules || [];
-    await ensureCrewbidsMonitoringForSelection();
-    await hydrateRemoteAvailabilityReviewRecords();
-    hydrateCrewbidsWinOddsFromMonitor();
-    mergePackageRiskAlertsIntoWinOddsCheck();
-    scheduleCrewbidsSharedLineProjectionRefresh();
-    scheduleCrewbidsBidAvoidAutoCheck();
-    scheduleCrewbidsBuddyBidAutoCheck();
-    scheduleSavedCrewbidsWinOddsRefresh();
-    await saveCrewbidsOfflineStateForCurrentPackage();
-  } catch (error) {
-    state.crewbidsCredentialLoadError = error.message || "Saved access check unavailable";
-    console.warn("CrewBids monitoring state unavailable:", error.message);
-  } finally {
-    state.crewbidsMonitorRefreshInFlight = false;
-    scheduleK4ConnectionPrompt();
-    renderCrewbidsEvidenceDependentViews();
-  }
 }
 
 async function refreshCrewbidsSharedLineProjection(options = {}) {
@@ -13512,9 +13515,9 @@ function setupCrewbidsMonitoringControls() {
     }
   });
 
-  $("checkCrewbidsConnection")?.addEventListener("click", () => {
-    checkCrewbidsConnection().catch((error) => console.warn("CrewBids connection check failed:", error.message));
-  });
+  // $("checkCrewbidsConnection")?.addEventListener("click", () => {
+  //   checkCrewbidsConnection().catch((error) => console.warn("CrewBids connection check failed:", error.message));
+  // });
 
   $("startCrewbidsMonitor")?.addEventListener("click", async () => {
     const identity = getCurrentBidSelectionIdentity();
@@ -18309,6 +18312,7 @@ function renderActiveTab() {
     if (state.activeTab !== scope) setLinePanelNavigationOpen(false, { scope });
   });
   scheduleLinePanelNavigationHighlight();
+  updateStickyOffsets();
 }
 
 function setupTabs() {
@@ -18328,10 +18332,6 @@ function setupTabs() {
 }
 
 const SECTION_JUMP_TARGETS = new Set(["calendar", "filters", "results"]);
-
-function updateHomeJumpHighlight() {
-  document.querySelector('.tab-jump[data-view-target="home"]')?.classList.toggle("is-home-active", state.activeTab !== "import");
-}
 
 function clearActiveSectionJumpButton() {
   document.querySelectorAll(".tab-jump.is-jump-active").forEach((button) => {
@@ -18366,7 +18366,6 @@ function unlockActiveSectionJumpTarget() {
 }
 
 function getPageJumpElement(target) {
-  if (target === "home") return document.body;
   if (target === "calendar") return document.querySelector(".calendar-panel");
   if (target === "filters") {
     const panel = getActivePanel();
@@ -18399,7 +18398,6 @@ let pageJumpHighlightFrame = 0;
 
 function updatePageJumpHighlight() {
   pageJumpHighlightFrame = 0;
-  updateHomeJumpHighlight();
   if (state.activeTab === "import") {
     clearActiveSectionJumpButton();
     return;
@@ -18438,18 +18436,6 @@ function setupPageJumps() {
   document.querySelectorAll("[data-view-target]").forEach((button) => {
     button.addEventListener("click", () => {
       const target = button.dataset.viewTarget;
-      if (target === "home") {
-        unlockActiveSectionJumpTarget();
-        updateHomeJumpHighlight();
-        clearActiveSectionJumpButton();
-        setActiveTab("lines", { skipViewportAdjustment: true });
-        requestAnimationFrame(() => {
-          window.scrollTo({ top: 0, behavior: "smooth" });
-          schedulePageJumpHighlightUpdate();
-        });
-        return;
-      }
-
       if (target === "calendar") {
         lockActiveSectionJumpTarget(target);
         requestAnimationFrame(() => {
@@ -18491,10 +18477,13 @@ function setupPreferencesControls() {
     window.location.assign("profile.html");
   });
 
-  $("profileButton")?.addEventListener("click", () => {
-    if (isProfilePage()) return;
-    window.location.assign("profile.html");
-  });
+  const profileButton = $("profileButton");
+  if (profileButton && !profileButton.matches("summary")) {
+    profileButton.addEventListener("click", () => {
+      if (isProfilePage()) return;
+      window.location.assign("profile.html");
+    });
+  }
 
   $("preferenceDisplayName")?.addEventListener("input", (event) => {
     state.preferences.displayName = event.target.value;
@@ -18796,6 +18785,40 @@ function setupPreferencesControls() {
     applyTheme();
     renderPreferences();
     renderActiveTab();
+  });
+}
+
+function setupTopbarMenus() {
+  const menus = [...document.querySelectorAll(".topbar-menu")];
+  if (!menus.length) return;
+
+  menus.forEach((menu) => {
+    menu.addEventListener("toggle", () => {
+      if (!menu.open) return;
+      menus.forEach((otherMenu) => {
+        if (otherMenu !== menu) otherMenu.open = false;
+      });
+    });
+    menu.querySelectorAll(".topbar-menu-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        menu.open = false;
+      });
+    });
+  });
+
+  document.addEventListener("pointerdown", (event) => {
+    if (event.target.closest?.(".topbar-menu")) return;
+    menus.forEach((menu) => {
+      menu.open = false;
+    });
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    const openMenu = menus.find((menu) => menu.open);
+    if (!openMenu) return;
+    openMenu.open = false;
+    openMenu.querySelector("summary")?.focus();
   });
 }
 
@@ -19131,21 +19154,7 @@ function renderBidWindowBanner() {
 }
 
 async function refreshCrewbidsCycleState() {
-  if (state.crewbidsCycleCheckInFlight || navigator.onLine === false) return state.crewbidsCycle;
-  state.crewbidsCycleCheckInFlight = true;
-  try {
-    const response = await fetchWithWorkspaceTimeout("/api/crewbids/cycle", { cache: "no-store" });
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok || !payload.cycle) throw new Error(payload.error || "CrewBids cycle unavailable");
-    state.crewbidsCycle = payload.cycle;
-    state.crewbidsCycleCheckedAt = Date.now();
-    return state.crewbidsCycle;
-  } catch (error) {
-    console.warn("CrewBids cycle refresh skipped:", error.message);
-    return state.crewbidsCycle;
-  } finally {
-    state.crewbidsCycleCheckInFlight = false;
-  }
+  state.crewbidsCycleCheckInFlight = false;
 }
 
 function scheduleBidWindowBannerUpdates() {
@@ -20184,6 +20193,7 @@ async function loadData() {
     clearNewUserPreviewState();
   }
   setupSupportTools();
+  setupTopbarMenus();
   setupConfirmTools();
   setupEmployeeIdentityModal();
   setupWorkspaceConnectivityWorkflow();
@@ -20285,7 +20295,7 @@ async function loadData() {
   updateStickyOffsets();
   window.addEventListener("resize", updateStickyOffsets);
   revealWorkspace();
-  refreshCrewbidsMonitoringState().catch((error) => console.warn("CrewBids monitoring refresh failed:", error.message));
+  // refreshCrewbidsMonitoringState().catch((error) => console.warn("CrewBids monitoring refresh failed:", error.message));
   scheduleStartupNotices().catch((error) => {
     console.warn("CrewBids restoration notice check skipped:", error.message);
     if (!openDeveloperSplashNote()) scheduleNewUserSplash();
